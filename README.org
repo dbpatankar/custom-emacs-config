@@ -13,17 +13,21 @@
 - [[#theming][Theming]]
 - [[#evil-and-keymap][EVIL and keymap]]
 - [[#search-and-filter][Search and filter]]
+- [[#completion-framework][Completion framework]]
 - [[#utilities][Utilities]]
   - [[#helpful][Helpful]]
   - [[#which-key][Which-key]]
   - [[#orderless][Orderless]]
   - [[#rainbow-delimiters][Rainbow-delimiters]]
+  - [[#flycheck][Flycheck]]
+  - [[#yasnippet][Yasnippet]]
   - [[#elfeed][Elfeed]]
 - [[#org-mode][ORG mode]]
   - [[#asymptote][Asymptote]]
 - [[#programming-languages][Programming languages]]
   - [[#julia][Julia]]
   - [[#python][Python]]
+- [[#latex][LaTeX]]
 - [[#custom][Custom]]
 
 * Introduction
@@ -227,6 +231,24 @@ Amazing package which shows matching brackets in same colour.
     :ensure t
     :hook (prog-mode . rainbow-delimiters-mode))
 #+end_src
+** Flycheck
+#+begin_src emacs-lisp
+  (use-package flycheck
+    :ensure t
+    :init
+    (global-flycheck-mode)
+    )
+#+end_src
+** Yasnippet
+#+begin_src emacs-lisp
+  (use-package yasnippet
+    :ensure t
+    :init
+    (yas-global-mode)
+    )
+  (use-package yasnippet-snippets
+    :ensure t)
+#+end_src
 ** Elfeed
 A RSS feed reader.
 #+begin_src emacs-lisp
@@ -330,8 +352,14 @@ Configuration with LSP
     )
 #+end_src
 
-* $\LaTeXe$
-$\LaTeXe$ config.
+* LaTeX
+#+begin_src emacs-lisp
+  '(TeX-PDF-mode t) 
+  (use-package tex
+    :ensure auctex)
+  (add-hook 'tex-mode-hook 'lsp-mode)
+  (add-hook 'tex-mode-hook 'flycheck-mode)
+#+end_src
 
 
 * Custom

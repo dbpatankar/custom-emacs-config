@@ -151,6 +151,20 @@
   :ensure t
   :hook (prog-mode . rainbow-delimiters-mode))
 
+(use-package flycheck
+  :ensure t
+  :init
+  (global-flycheck-mode)
+  )
+
+(use-package yasnippet
+  :ensure t
+  :init
+  (yas-global-mode)
+  )
+(use-package yasnippet-snippets
+  :ensure t)
+
 (use-package elfeed-goodies
   :ensure t)
 
@@ -230,11 +244,19 @@
     (add-hook 'elpy-mode-hook 'flycheck-mode))
   )
 
+'(TeX-PDF-mode t) 
+(use-package tex
+  :ensure auctex)
+(add-hook 'tex-mode-hook 'lsp-mode)
+(add-hook 'tex-mode-hook 'flycheck-mode)
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   '("a44e2d1636a0114c5e407a748841f6723ed442dc3a0ed086542dc71b92a87aee" default))
  '(package-selected-packages
    '(helpful smex rainbow-delimiters ivy-rich doom-modeline dashboard julia-mode julia-repl orderless magit evil-leader counsel ivy org which-key vertico use-package evil doom-themes)))
 (custom-set-faces
