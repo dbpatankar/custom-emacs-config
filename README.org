@@ -53,7 +53,7 @@ This file contains my custom emacs config to mimic doomemacs config as much as p
 
 ** Global auto revert
 #+begin_src emacs-lisp
-  (global-auto-revert-mode 1) 
+  (global-auto-revert-mode 1)
 #+end_src
 
 ** Split windows vertically by default
@@ -125,7 +125,7 @@ This file contains my custom emacs config to mimic doomemacs config as much as p
       "c c" 'julia-repl-send-region-or-line
       "c b" 'julia-repl-send-buffer)
   )
-  
+
 
   (use-package evil
     :ensure t
@@ -182,7 +182,7 @@ This file contains my custom emacs config to mimic doomemacs config as much as p
     :ensure t
     :config
     (vertico-mode 1))
-#+end_src  
+#+end_src
 
 * Completion framework
 Company mode
@@ -218,7 +218,7 @@ An important package which gives possible keystrokes and corresponding actions i
     (which-key-mode))
 #+end_src
 ** Orderless
-Not sure what it does now. Need to read about it. 
+Not sure what it does now. Need to read about it.
 #+begin_src emacs-lisp
   (use-package orderless
 
@@ -352,9 +352,42 @@ Configuration with LSP
     )
 #+end_src
 
-* LaTeX
+** TCL
+TCL setup for OpenSees. The tcl mode is autoloaded when opening a tcl file.
+Start inferior tcl process (OpenSees in this case as defined in the config
+below) with ~(M-x) run-tcl~.
+*** Keybindings:
+| Action                   | Keybinding | Function/command |
+|--------------------------+------------+------------------|
+| Start inferior process   | -          | run-tcl          |
+| Switch to tcl repl       | C-c C-s    | switch-to-tcl    |
+| Load/source file in repl | C-c C-f    | tcl-load-file    |
 #+begin_src emacs-lisp
-  '(TeX-PDF-mode t) 
+  (setq tcl-application "/home/digvijay/bin/OpenSees")
+#+end_src
+
+
+* LaTeX
+LaTeX setup with live preview and snippets. To use snippets just type first
+three characters of environment name (ex: fig for figure) and then hit
+~TAB~.
+The compiling process is handled by AUCTex. Any options to the latex command
+should be passed using local variables at the end of file.
+For ex: to define ~-shell-escape~ for a particular tex file, use following
+code block.
+#+begin_example
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-command-extra-options: "-shell-escape"
+%%% End:
+#+end_example
+** Keybindings
+| Action                | Keybinding  | Function/command |
+|-----------------------+-------------+------------------|
+| Compile latex         | C-c C-c     |                  |
+| live-preview at point | C-c C-p C-p |                  |
+#+begin_src emacs-lisp
+  '(TeX-PDF-mode t)
   (use-package tex
     :ensure auctex)
   (add-hook 'tex-mode-hook 'lsp-mode)

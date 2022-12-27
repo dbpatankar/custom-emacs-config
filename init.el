@@ -244,7 +244,9 @@
     (add-hook 'elpy-mode-hook 'flycheck-mode))
   )
 
-'(TeX-PDF-mode t) 
+(setq tcl-application "/home/digvijay/bin/OpenSees")
+
+'(TeX-PDF-mode t)
 (use-package tex
   :ensure auctex)
 (add-hook 'tex-mode-hook 'lsp-mode)
@@ -255,8 +257,6 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(custom-safe-themes
-   '("a44e2d1636a0114c5e407a748841f6723ed442dc3a0ed086542dc71b92a87aee" default))
  '(package-selected-packages
    '(helpful smex rainbow-delimiters ivy-rich doom-modeline dashboard julia-mode julia-repl orderless magit evil-leader counsel ivy org which-key vertico use-package evil doom-themes)))
 (custom-set-faces
