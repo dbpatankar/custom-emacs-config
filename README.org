@@ -240,6 +240,8 @@ Amazing package which shows matching brackets in same colour.
     )
 #+end_src
 ** Yasnippet
+All the yasnippets can be activated using the first three letters of the snippet
+followed by ~TAB~. The mode is enabled globally.
 #+begin_src emacs-lisp
   (use-package yasnippet
     :ensure t
@@ -296,13 +298,19 @@ A RSS feed reader.
 #+end_src
 
 * Programming languages
-Start LSP mode with lsp-mode
+Install lsp-mode
 #+begin_src emacs-lisp
 (use-package lsp-mode
 :ensure t
 )
 #+end_src
 ** Julia
+*** Keybindings
+| Action                    | Keybindings | Function/Command |
+|---------------------------+-------------+------------------|
+| Send a line to REPL       | C-c C-c     |                  |
+| Send whole buffer to REPL | C-c C-b     |                  |
+| Switch to REPL/buffer     | C-c C-z     |                  |
 #+begin_src emacs-lisp
   (use-package julia-mode
     :ensure t
@@ -321,10 +329,15 @@ Start LSP mode with lsp-mode
 #+end_src
 
 ** Python
-Configuration with LSP
-# #+begin_src emacs-lisp
-# (lsp-mode)
-# #+end_src
+*** Keybindings
+| Action                         | Keybinding | Function/Command                 |
+|--------------------------------+------------+----------------------------------|
+| Get into a virtual environment | -          | pyvenv-workon                    |
+| Start ipython REPL             | -          | run-python                       |
+| Send a line to REPL            | C-c C-CR   |                                  |
+| Send buffer to REPL            | C-c C-c    | elpy-shell-send-region-or-buffer |
+| Switch to REPL                 | C-c C-z    | elpy-shell-switch-to-shell       |
+| Switch to buffer               | -          | elpy-shell-switch-to-buffer      |
 #+begin_src emacs-lisp
   (use-package elpy
     :ensure t
