@@ -1,0 +1,351 @@
+#+title: My custom emacs config
+#+property: header-args :tangle init.el
+#+options: broken-links:t
+
+* Contents                                                          :toc:
+- [[#introduction][Introduction]]
+  - [[#add-melpa-repository][Add MELPA repository]]
+  - [[#remove-unnecessary-window-decorations][Remove unnecessary window decorations]]
+  - [[#line-numbers][Line numbers]]
+  - [[#global-auto-revert][Global auto revert]]
+  - [[#split-windows-vertically-by-default][Split windows vertically by default]]
+- [[#theming][Theming]]
+- [[#evil-and-keymap][EVIL and keymap]]
+- [[#search-and-filter][Search and filter]]
+- [[#utilities][Utilities]]
+  - [[#helpful][Helpful]]
+  - [[#which-key][Which-key]]
+  - [[#orderless][Orderless]]
+  - [[#rainbow-delimiters][Rainbow-delimiters]]
+  - [[#elfeed][Elfeed]]
+- [[#org-mode][ORG mode]]
+  - [[#asymptote][Asymptote]]
+- [[#programming-languages][Programming languages]]
+  - [[#julia][Julia]]
+  - [[#python][Python]]
+- [[#custom][Custom]]
+
+* Introduction
+This file contains my custom emacs config to mimic doomemacs config as much as possible. It also tries to add a few more features I need.
+** Add MELPA repository
+#+begin_src emacs-lisp
+  (require 'package)
+  (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+#+end_src
+
+** Remove unnecessary window decorations
+#+begin_src emacs-lisp
+  (menu-bar-mode -1)
+  (scroll-bar-mode -1)
+  (tool-bar-mode -1)
+#+end_src
+
+** Line numbers
+#+begin_src emacs-lisp
+  (global-display-line-numbers-mode 1)
+  (setq display-line-numbers-type 'relative)
+#+end_src
+
+** Global auto revert
+#+begin_src emacs-lisp
+  (global-auto-revert-mode 1) 
+#+end_src
+
+** Split windows vertically by default
+#+begin_src emacs-lisp
+  (setq
+     split-width-threshold 0
+     split-height-threshold nil)
+#+end_src
+
+* Theming
+#+begin_src emacs-lisp
+  (use-package dashboard
+    :ensure t
+    :custom
+    (dashboard-center-content 1)
+    :config
+    (dashboard-mode)
+    (dashboard-refresh-buffer))
+
+  ;;(use-package spacemacs-theme
+  ;;  :ensure t)
+
+  (use-package leuven-theme
+    :ensure t
+    :config
+    (load-theme 'leuven-dark t)
+  )
+
+  (use-package doom-themes
+    :ensure t
+    :config
+    ;;(load-theme 'doom-dracula t)
+  )
+
+  (use-package doom-modeline
+    :ensure t
+    :init
+    (doom-modeline-mode 1)
+    :config
+    (setq doom-modeline-height 15))
+
+  (set-face-attribute 'default nil :family "Fira Code" :height 140)
+#+end_src
+
+* EVIL and keymap
+#+begin_src emacs-lisp
+  (use-package evil-leader
+    :ensure t
+    :config
+    (global-evil-leader-mode)
+    (evil-leader/set-leader "<SPC>")
+    ;; KEYBINDINGS
+    (evil-leader/set-key
+    "f f" 'counsel-find-file
+    "f r" 'counsel-recentf
+    "b b" 'counsel-switch-buffer
+    "b d" 'kill-this-buffer
+    "h v" 'counsel-describe-variable
+    "h f" 'counsel-describe-function
+    "h o" 'counsel-describe-symbol
+    "g g" 'magit
+    "w v" 'evil-window-vsplit
+    "w w" 'evil-window-next
+    "w c" 'evil-window-delete
+    )
+    (evil-leader/set-key-for-mode 'org-mode
+      "m e" 'org-export-dispatch)
+    (evil-leader/set-key-for-mode 'julia-mode
+      "c c" 'julia-repl-send-region-or-line
+      "c b" 'julia-repl-send-buffer)
+  )
+  
+
+  (use-package evil
+    :ensure t
+    :config
+    (evil-mode 1)
+    (setq evil-overriding-maps nil)
+    (setq evil-intercept-maps nil))
+#+end_src
+
+* Search and filter
+#+begin_src emacs-lisp
+  (use-package counsel
+    :ensure t
+    :bind (("M-x" . counsel-M-x))
+    :config
+    (setq ivy-initial-inputs-alist nil)) ;; Dont start searches with ^
+
+  (use-package smex   ;; recent commands in counsel-M-x
+    :ensure t
+    :defer 1
+    :after counsel)
+
+  (use-package ivy
+    :ensure t
+    :config
+      (ivy-mode)
+      (setq ivy-use-virtual-buffers t)
+      (setq enable-recursive-minibuffers t)
+      ;; enable this if you want `swiper' to use it
+      (setq search-default-mode #'char-fold-to-regexp)
+      (global-set-key "\C-s" 'swiper-isearch)
+      ;;(global-set-key (kbd "M-x") 'counsel-M-x)
+      (global-set-key (kbd "C-x C-f") 'counsel-find-file)
+      (global-set-key (kbd "<f1> f") 'counsel-describe-function)
+      (global-set-key (kbd "<f1> v") 'counsel-describe-variable)
+      (global-set-key (kbd "<f1> o") 'counsel-describe-symbol)
+      (global-set-key (kbd "<f1> l") 'counsel-find-library)
+      (global-set-key (kbd "<f2> i") 'counsel-info-lookup-symbol)
+      (global-set-key (kbd "<f2> u") 'counsel-unicode-char)
+      (global-set-key (kbd "C-c g") 'counsel-git)
+      (global-set-key (kbd "C-c j") 'counsel-git-grep)
+      (global-set-key (kbd "C-c k") 'counsel-ag)
+      (global-set-key (kbd "C-x l") 'counsel-locate)
+      (global-set-key (kbd "C-S-o") 'counsel-rhythmbox)
+      ;;(global-set-key (kbd "SPC-b b") 'ivy-switch-buffer)
+      (define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history))
+
+  (use-package ivy-rich
+    :ensure t
+    :init
+    (ivy-rich-mode 1))
+
+  (use-package vertico
+    :ensure t
+    :config
+    (vertico-mode 1))
+#+end_src  
+
+* Completion framework
+Company mode
+# #+begin_src emacs-lisp
+# (add-hook 'after-init-hook 'global-company-mode)
+# (use-package company
+#     :ensure t
+# )
+# #+end_src
+
+* Utilities
+** Helpful
+This package is for better view of documentation. Currently I do not see any significant improvement but keeping it to try and tweak it further.
+#+begin_src emacs-lisp
+  (use-package helpful  ;; probably not needed. Can be commented
+    :ensure t
+    :custom
+    (counsel-describe-function-function #'helpful-callable)
+    (counsel-describe-variable-function #'helpful-variable)
+    :bind
+    ([remap describe-function] . counsel-describe-function)
+    ([remap describe-variable] . counsel-describe-variable)
+    ([remap describe-symbol] . counsel-describe-symbol)
+    ([remap describe-command] . helpful-command)
+    ([remap describe-key] . helpful-key))
+#+end_src
+** Which-key
+An important package which gives possible keystrokes and corresponding actions in any mode.
+#+begin_src emacs-lisp
+  (use-package which-key
+    :ensure t
+    :config
+    (which-key-mode))
+#+end_src
+** Orderless
+Not sure what it does now. Need to read about it. 
+#+begin_src emacs-lisp
+  (use-package orderless
+
+    :ensure t)
+#+end_src
+** Rainbow-delimiters
+Amazing package which shows matching brackets in same colour.
+#+begin_src emacs-lisp
+  (use-package rainbow-delimiters
+    :ensure t
+    :hook (prog-mode . rainbow-delimiters-mode))
+#+end_src
+** Elfeed
+A RSS feed reader.
+#+begin_src emacs-lisp
+  (use-package elfeed-goodies
+    :ensure t)
+
+  (use-package elfeed
+    :ensure t
+    :config
+    (require 'elfeed-goodies)
+    (elfeed-goodies/setup)
+    (setq elfeed-feeds '(("https://www.reddit.com/r/linux.rss" linux reddit)
+			 ("https://www.reddit.com/r/emacs.rss" emacs reddit)
+			 ("https://www.reddit.com/r/julia.rss" julia programming reddit)
+			 ("http://timesofindia.indiatimes.com/rssfeedstopstories.cms" TOI news)
+			 ("https://distrowatch.com/news/dw.xml" distrowatch linux)
+                         ("https://rss.slashdot.org/Slashdot/slashdotMain" shashdot linux)
+   )))
+#+end_src
+* ORG mode
+#+begin_src emacs-lisp
+  (use-package org
+    ;;:ensure t
+    )
+
+  (use-package toc-org
+    :ensure t)
+#+end_src
+
+** Asymptote
+#+begin_src emacs-lisp
+  (add-to-list 'load-path "/usr/share/asymptote/")
+  (add-to-list 'load-path "/home/digvijay/emacs_custom_libs/")
+  (require 'ob-asymptote)
+  (autoload 'asy-mode "asy-mode.el" "Asymptote major mode." t)
+  (autoload 'lasy-mode "asy-mode.el" "hybrid Asymptote/Latex major mode." t)
+  (autoload 'asy-insinuate-latex "asy-mode.el" "Asymptote insinuate LaTeX." t)
+  (add-to-list 'auto-mode-alist '("\\.asy$" . asy-mode))
+#+end_src
+
+#+begin_src emacs_lisp
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((asymptote . t)))
+#+end_src
+
+* Programming languages
+Start LSP mode with lsp-mode
+#+begin_src emacs-lisp
+(use-package lsp-mode
+:ensure t
+)
+#+end_src
+** Julia
+#+begin_src emacs-lisp
+  (use-package julia-mode
+    :ensure t
+    :config
+    (add-hook 'julia-mode-hook 'julia-repl))
+
+  ;; UNICODE support
+  (add-hook 'term-exec-hook
+	    (function
+	     (lambda ()
+	       (set-buffer-process-coding-system 'utf-8-unix 'utf-8-unix))))
+  (defadvice ansi-term (after advise-ansi-term-coding-system)
+      (set-process-coding-system 'utf-8-unix 'utf-8-unix))
+  (ad-activate 'ansi-term)
+  (set-terminal-coding-system 'utf-8)
+#+end_src
+
+** Python
+Configuration with LSP
+# #+begin_src emacs-lisp
+# (lsp-mode)
+# #+end_src
+#+begin_src emacs-lisp
+  (use-package elpy
+    :ensure t
+    :init
+    (elpy-enable)
+    ;; Use IPython for REPL
+    ;;  (setq python-shell-interpreter "jupyter"
+    ;;	python-shell-interpreter-args "console --simple-prompt"
+    ;;	python-shell-prompt-detect-failure-warning nil)
+    ;;  (add-to-list 'python-shell-completion-native-disabled-interpreters
+    ;;	       "jupyter")
+    ;; Use IPython for REPL
+    (setq python-shell-interpreter "ipython"
+	  python-shell-interpreter-args
+	  "-i --simple-prompt --InteractiveShell.display_page=True")
+    ;;   (setq python-shell-interpreter "ipython"
+    ;; 	python-shell-prompt-detect-failure-warning nil)
+    ;;   (add-to-list 'python-shell-completion-native-disabled-interpreters
+    ;; 	       "ipython")
+
+    ;; Enable Flycheck
+    (when (require 'flycheck nil t)
+      (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
+      (add-hook 'elpy-mode-hook 'flycheck-mode))
+    )
+#+end_src
+
+* $\LaTeXe$
+$\LaTeXe$ config.
+
+
+* Custom
+#+begin_src emacs-lisp
+  (custom-set-variables
+   ;; custom-set-variables was added by Custom.
+   ;; If you edit it by hand, you could mess it up, so be careful.
+   ;; Your init file should contain only one such instance.
+   ;; If there is more than one, they won't work right.
+   '(package-selected-packages
+     '(helpful smex rainbow-delimiters ivy-rich doom-modeline dashboard julia-mode julia-repl orderless magit evil-leader counsel ivy org which-key vertico use-package evil doom-themes)))
+  (custom-set-faces
+   ;; custom-set-faces was added by Custom.
+   ;; If you edit it by hand, you could mess it up, so be careful.
+   ;; Your init file should contain only one such instance.
+   ;; If there is more than one, they won't work right.
+   )
+#+end_src
