@@ -27,7 +27,9 @@
 - [[#programming-languages][Programming languages]]
   - [[#julia][Julia]]
   - [[#python][Python]]
+  - [[#tcl][TCL]]
 - [[#latex][LaTeX]]
+  - [[#keybindings][Keybindings]]
 - [[#custom][Custom]]
 
 * Introduction
