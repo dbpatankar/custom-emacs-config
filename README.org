@@ -1,6 +1,7 @@
 #+title: My custom emacs config
+#+author: Digvijay Patankar
 #+property: header-args :tangle init.el
-#+options: broken-links:t
+#+options: broken-links:t tex:t
 
 * Contents                                                          :toc:
 - [[#introduction][Introduction]]
