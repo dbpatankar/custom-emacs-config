@@ -3,11 +3,12 @@
 #+property: header-args :tangle init.el
 #+options: broken-links:t tex:t
 
-* Contents                                                          :toc:
+* Contents                                                          :TOC:
 - [[#introduction][Introduction]]
   - [[#add-melpa-repository][Add MELPA repository]]
   - [[#remove-unnecessary-window-decorations][Remove unnecessary window decorations]]
   - [[#line-numbers][Line numbers]]
+  - [[#visual-line-mode][Visual line mode]]
   - [[#global-auto-revert][Global auto revert]]
   - [[#split-windows-vertically-by-default][Split windows vertically by default]]
 - [[#theming][Theming]]
@@ -23,6 +24,9 @@
   - [[#yasnippet][Yasnippet]]
   - [[#elfeed][Elfeed]]
 - [[#org-mode][ORG mode]]
+  - [[#toc-org][Toc-org]]
+  - [[#org-superstar][Org-superstar]]
+  - [[#org-ref][Org-ref]]
   - [[#asymptote][Asymptote]]
 - [[#programming-languages][Programming languages]]
   - [[#julia][Julia]]
@@ -52,6 +56,12 @@ This file contains my custom emacs config to mimic doomemacs config as much as p
   (global-display-line-numbers-mode 1)
   (setq display-line-numbers-type 'relative)
 #+end_src
+
+** Visual line mode
+#+begin_src emacs-lisp
+  (global-visual-line-mode 1)
+#+end_src
+
 
 ** Global auto revert
 #+begin_src emacs-lisp
@@ -109,24 +119,26 @@ This file contains my custom emacs config to mimic doomemacs config as much as p
     (evil-leader/set-leader "<SPC>")
     ;; KEYBINDINGS
     (evil-leader/set-key
-    "f f" 'counsel-find-file
-    "f r" 'counsel-recentf
-    "b b" 'counsel-switch-buffer
-    "b d" 'kill-this-buffer
-    "h v" 'counsel-describe-variable
-    "h f" 'counsel-describe-function
-    "h o" 'counsel-describe-symbol
-    "g g" 'magit
-    "w v" 'evil-window-vsplit
-    "w w" 'evil-window-next
-    "w c" 'evil-window-delete
-    )
+      "f f" 'counsel-find-file
+      "f r" 'counsel-recentf
+      "b b" 'counsel-switch-buffer
+      "b d" 'kill-this-buffer
+      "h v" 'counsel-describe-variable
+      "h f" 'counsel-describe-function
+      "h o" 'counsel-describe-symbol
+      "g g" 'magit
+      "w v" 'evil-window-vsplit
+      "w w" 'evil-window-next
+      "w c" 'evil-window-delete
+      )
     (evil-leader/set-key-for-mode 'org-mode
-      "m e" 'org-export-dispatch)
+      "m e" 'org-export-dispatch
+      "m @" 'org-ref-insert-cite-link
+      "m !" 'org-ref-insert-ref-link)
     (evil-leader/set-key-for-mode 'julia-mode
       "c c" 'julia-repl-send-region-or-line
       "c b" 'julia-repl-send-buffer)
-  )
+    )
 
 
   (use-package evil
@@ -136,6 +148,9 @@ This file contains my custom emacs config to mimic doomemacs config as much as p
     (setq evil-overriding-maps nil)
     (setq evil-intercept-maps nil))
 #+end_src
+
+#+RESULTS:
+: t
 
 * Search and filter
 #+begin_src emacs-lisp
@@ -273,13 +288,108 @@ A RSS feed reader.
    )))
 #+end_src
 * ORG mode
+Colour output for code snippets in ~LaTeX~ using ~minted~ and some other ~LaTeX~ export stuff. Also includes for config for ~org-ref~.
 #+begin_src emacs-lisp
   (use-package org
     ;;:ensure t
-    )
+    :config
+    ;;(variable-pitch-mode nil)
+    (setq org-latex-listings 'minted) ;; or t
+    (add-to-list 'org-latex-packages-alist '("" "minted")) ;; or listings
+    (add-to-list 'org-latex-packages-alist '("" "xcolor"))
+    (setq bibtex-dialect 'biblatex)
+    (setq  org-latex-pdf-process '("latexmk -shell-escape -%latex -bibtex -interaction=nonstopmode -f -pdf %f"))
+    (with-eval-after-load 'ox-latex
+      (add-to-list 'org-latex-classes
+		   '("book-nodefaults"
+		     "\\documentclass{book}"
+		     ("\\chapter{%s}" . "\\chapter*{%s}")
+		     ("\\section{%s}" . "\\section*{%s}")
+		     ("\\subsection{%s}" . "\\subsection*{%s}")
+		     ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+		     ))
+      (add-to-list 'org-latex-classes
+		   '("exam"
+		     "\\documentclass{exam}"
+		     ("\\chapter{%s}" . "\\chapter*{%s}")
+		     ("\\section{%s}" . "\\section*{%s}")
+		     ("\\subsection{%s}" . "\\subsection*{%s}")
+		     ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+		     ))
+      (add-to-list 'org-latex-classes
+		   '("article-nodefaults"
+		     "\\documentclass{article}"
+		     ("\\section{%s}" . "\\section*{%s}")
+		     ("\\subsection{%s}" . "\\subsection*{%s}")
+		     ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+		     )))
 
+    ;; (add-hook 'org-mode-hook #'org-inline-pdf-mode)
+    (add-hook 'org-mode-hook
+	      (lambda () (add-hook 'after-save-hook #'org-babel-tangle
+				   :append :local)))
+    (add-hook 'org-mode-hook 'toc-org-mode)
+    )
+#+end_src
+
+** Toc-org
+#+begin_src emacs-lisp
   (use-package toc-org
     :ensure t)
+#+end_src
+** Org-superstar
+For fancy bullets in org mode. Org-bullets is outdated.
+#+begin_src emacs-lisp
+  (use-package org-superstar
+    :ensure t
+    :custom
+    (org-superstar-headline-bullets-list '("◉" "○" "✿" "🞛" "✜" "◆" "▶" "✸" "☯" "☯" "☯" "☯" "☯" "☯" ))
+    :config
+    (set-face-attribute 'org-level-8 nil :weight 'bold :inherit 'default)
+    ;; ;; Low levels are unimportant = no scaling
+    ;; (set-face-attribute 'org-level-7 nil :inherit 'org-level-8)
+    ;; (set-face-attribute 'org-level-6 nil :inherit 'org-level-8)
+    ;; (set-face-attribute 'org-level-5 nil :inherit 'org-level-8)
+    ;; (set-face-attribute 'org-level-4 nil :inherit 'org-level-8)
+    ;; ;; Top ones get scaled the same as in LaTeX (\large, \Large, \LARGE)
+    (set-face-attribute 'org-level-3 nil :inherit 'org-level-8 :height 1.2) ;\large
+    (set-face-attribute 'org-level-2 nil :inherit 'org-level-8 :height 1.44) ;\Large
+    (set-face-attribute 'org-level-1 nil :inherit 'org-level-8 :height 1.728) ;\LARGE
+    ;; ;; Only use the first 4 styles and do not cycle.
+    ;; (org-cycle-level-faces nil)
+    ;; (org-n-level-faces 4)
+    ;; ;; Document Title, (\huge)
+    ;; (set-face-attribute 'org-document-title nil
+    ;;                 :height 2.074
+    ;;                 :foreground 'unspecified
+    ;;                 :inherit 'org-level-8)
+    :hook (org-mode . org-superstar-mode)
+    )
+#+end_src
+** Org-ref
+The default citation type is ~autocite~ defined using ~org-ref-default-citation-link~. Different citation types such as ~cite~, ~citep~ etc can be given instead of ~autocite~ by changing the variable. The variable must be in ~:init~ block so that it can be evaluated before loading the package. Keeping it in the ~:config~ block doesn't work. List of all such types can be seen in the documentation of ~org-ref-cite-types~.
+
+~Org-ref~ provides multiple actions on cite keys such as open the bibentry, open pdf etc. Just click on the cite key to see the possible actions. 
+*** Keybindings
+| Action           | Keybinding | Function/command         |
+|------------------+------------+--------------------------|
+| insert citation  | C-c c      | org-ref-insert-cite-link |
+| insert reference | C-c r      | org-ref-insert-ref-link  |
+#+begin_src emacs-lisp
+  (use-package org-ref
+    :ensure t
+    :after org
+    ;; :defer t
+    :init
+    ;;(require 'org-ref-helm)
+    (require 'org-ref-ivy)
+    (setq org-ref-default-citation-link "autocite")
+    :config
+    (setq bibtex-dialect 'biblatex)
+    :bind
+    (("C-c c" . org-ref-insert-cite-link)
+     ("C-c r" . org-ref-insert-ref-link))
+    )
 #+end_src
 
 ** Asymptote
@@ -345,7 +455,7 @@ Install lsp-mode
     :ensure t
     :init
     (elpy-enable)
-    ;; Use IPython for REPL
+    ;; Use jupyter for REPL
     ;;  (setq python-shell-interpreter "jupyter"
     ;;	python-shell-interpreter-args "console --simple-prompt"
     ;;	python-shell-prompt-detect-failure-warning nil)
@@ -354,11 +464,10 @@ Install lsp-mode
     ;; Use IPython for REPL
     (setq python-shell-interpreter "ipython"
 	  python-shell-interpreter-args
-	  "-i --simple-prompt --InteractiveShell.display_page=True")
-    ;;   (setq python-shell-interpreter "ipython"
-    ;; 	python-shell-prompt-detect-failure-warning nil)
-    ;;   (add-to-list 'python-shell-completion-native-disabled-interpreters
-    ;; 	       "ipython")
+	  "-i --simple-prompt --InteractiveShell.display_page=True"
+	  python-shell-prompt-detect-failure-warning nil)
+    (add-to-list 'python-shell-completion-native-disabled-interpreters
+		 "ipython")
 
     ;; Enable Flycheck
     (when (require 'flycheck nil t)
@@ -392,7 +501,7 @@ For ex: to define ~-shell-escape~ for a particular tex file, use following
 code block.
 #+begin_example
 %%% Local Variables:
-%%% mode: latex
+%%% TeX-engine: xetex
 %%% TeX-command-extra-options: "-shell-escape"
 %%% End:
 #+end_example
@@ -407,7 +516,47 @@ code block.
     :ensure auctex)
   (add-hook 'tex-mode-hook 'lsp-mode)
   (add-hook 'tex-mode-hook 'flycheck-mode)
+  ;; Use LatexMK for compiling and inheret pdf setting from auctex
+  (use-package auctex-latexmk
+  :ensure t
+  :config
+  (auctex-latexmk-setup)
+  (setq auctex-latexmk-inherit-TeX-PDF-mode t)
+  )
+  ;; Use RefTeX for citations and references
+  (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
+  (setq reftex-plug-into-AUCTeX t)
+  ;; Use helm-bibtex for references and citations
+  ;; (use-package helm
+  ;; :ensure t)
+  ;; (use-package helm-bibtex
+  ;; :ensure t)
+  ;; (autoload 'helm-bibtex "helm-bibtex" "" t)
+
+  ;; Use ivy-bibtex for citations and references
+  ;; (use-package ivy-bibtex
+  ;;   :ensure t
+  ;;   :config
+  ;;   (autoload 'ivy-bibtex "ivy-bibtex" "" t)
+  ;;   ;; ivy-bibtex requires ivy's `ivy--regex-ignore-order` regex builder, which
+  ;;   ;; ignores the order of regexp tokens when searching for matching candidates.
+  ;;   ;; Add something like this to your init file:
+  ;;   (setq ivy-re-builders-alist
+  ;; 	  '((ivy-bibtex . ivy--regex-ignore-order)
+  ;; 	    (t . ivy--regex-plus)))
+  ;;   ;; Change default action to insert citation from open URL
+  ;;   (setq ivy-bibtex-default-action 'ivy-bibtex-insert-citation)
+  ;;   (setq ivy-bibtex-default-multi-action 'ivy-bibtex-insert-key)
+  ;;   (setq bibtex-completion-cite-prompt-for-optional-arguments nil)
+  ;;   :bind
+  ;;   (
+  ;;    ("C-c c" . ivy-bibtex-with-local-bibliography)
+  ;;    )
+  ;;   )
 #+end_src
+
+#+RESULTS:
+: t
 
 
 * Custom
