@@ -33,7 +33,6 @@
   - [[#python][Python]]
   - [[#tcl][TCL]]
 - [[#latex][LaTeX]]
-  - [[#keybindings][Keybindings]]
 - [[#custom][Custom]]
 
 * Introduction
@@ -480,7 +479,7 @@ Install lsp-mode
 TCL setup for OpenSees. The tcl mode is autoloaded when opening a tcl file.
 Start inferior tcl process (OpenSees in this case as defined in the config
 below) with ~(M-x) run-tcl~.
-*** Keybindings:
+*** Keybindings
 | Action                   | Keybinding | Function/command |
 |--------------------------+------------+------------------|
 | Start inferior process   | -          | run-tcl          |
@@ -505,7 +504,7 @@ code block.
 %%% TeX-command-extra-options: "-shell-escape"
 %%% End:
 #+end_example
-** Keybindings
+*** Keybindings
 | Action                | Keybinding  | Function/command |
 |-----------------------+-------------+------------------|
 | Compile latex         | C-c C-c     |                  |
@@ -554,10 +553,6 @@ code block.
   ;;    )
   ;;   )
 #+end_src
-
-#+RESULTS:
-: t
-
 
 * Custom
 #+begin_src emacs-lisp
