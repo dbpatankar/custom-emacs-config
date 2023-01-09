@@ -11,6 +11,7 @@
   - [[#visual-line-mode][Visual line mode]]
   - [[#global-auto-revert][Global auto revert]]
   - [[#split-windows-vertically-by-default][Split windows vertically by default]]
+  - [[#yes-no-to-y-n][yes-no to y-n]]
 - [[#theming][Theming]]
 - [[#evil-and-keymap][EVIL and keymap]]
 - [[#search-and-filter][Search and filter]]
@@ -32,6 +33,7 @@
   - [[#julia][Julia]]
   - [[#python][Python]]
   - [[#tcl][TCL]]
+  - [[#rust][Rust]]
 - [[#latex][LaTeX]]
 - [[#custom][Custom]]
 
@@ -73,6 +75,15 @@ This file contains my custom emacs config to mimic doomemacs config as much as p
      split-width-threshold 0
      split-height-threshold nil)
 #+end_src
+
+** yes-no to y-n
+#+begin_src emacs-lisp
+  (defalias 'yes-or-no-p 'y-or-n-p)
+#+end_src
+
+#+RESULTS:
+: yes-or-no-p
+
 
 * Theming
 #+begin_src emacs-lisp
@@ -271,10 +282,12 @@ followed by ~TAB~. The mode is enabled globally.
 A RSS feed reader.
 #+begin_src emacs-lisp
   (use-package elfeed-goodies
-    :ensure t)
+    :ensure t
+    :defer t)
 
   (use-package elfeed
     :ensure t
+    :defer t
     :config
     (require 'elfeed-goodies)
     (elfeed-goodies/setup)
@@ -283,14 +296,15 @@ A RSS feed reader.
 			 ("https://www.reddit.com/r/julia.rss" julia programming reddit)
 			 ("http://timesofindia.indiatimes.com/rssfeedstopstories.cms" TOI news)
 			 ("https://distrowatch.com/news/dw.xml" distrowatch linux)
-                         ("https://rss.slashdot.org/Slashdot/slashdotMain" shashdot linux)
-   )))
+			 ("https://rss.slashdot.org/Slashdot/slashdotMain" shashdot linux)
+			 )))
 #+end_src
 * ORG mode
 Colour output for code snippets in ~LaTeX~ using ~minted~ and some other ~LaTeX~ export stuff. Also includes for config for ~org-ref~.
 #+begin_src emacs-lisp
   (use-package org
     ;;:ensure t
+    :defer t
     :config
     ;;(variable-pitch-mode nil)
     (setq org-latex-listings 'minted) ;; or t
@@ -323,7 +337,7 @@ Colour output for code snippets in ~LaTeX~ using ~minted~ and some other ~LaTeX~
 		     ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
 		     )))
 
-    ;; (add-hook 'org-mode-hook #'org-inline-pdf-mode)
+    (add-hook 'org-mode-hook #'org-inline-pdf-mode)
     (add-hook 'org-mode-hook
 	      (lambda () (add-hook 'after-save-hook #'org-babel-tangle
 				   :append :local)))
@@ -334,13 +348,15 @@ Colour output for code snippets in ~LaTeX~ using ~minted~ and some other ~LaTeX~
 ** Toc-org
 #+begin_src emacs-lisp
   (use-package toc-org
-    :ensure t)
+    :ensure t
+    :defer t)
 #+end_src
 ** Org-superstar
 For fancy bullets in org mode. Org-bullets is outdated.
 #+begin_src emacs-lisp
   (use-package org-superstar
     :ensure t
+    :defer t
     :custom
     (org-superstar-headline-bullets-list '("◉" "○" "✿" "🞛" "✜" "◆" "▶" "✸" "☯" "☯" "☯" "☯" "☯" "☯" ))
     :config
@@ -400,20 +416,17 @@ The default citation type is ~autocite~ defined using ~org-ref-default-citation-
   (autoload 'lasy-mode "asy-mode.el" "hybrid Asymptote/Latex major mode." t)
   (autoload 'asy-insinuate-latex "asy-mode.el" "Asymptote insinuate LaTeX." t)
   (add-to-list 'auto-mode-alist '("\\.asy$" . asy-mode))
-#+end_src
-
-#+begin_src emacs_lisp
-(org-babel-do-load-languages
- 'org-babel-load-languages
- '((asymptote . t)))
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((asymptote . t)))
 #+end_src
 
 * Programming languages
 Install lsp-mode
 #+begin_src emacs-lisp
-(use-package lsp-mode
-:ensure t
-)
+  (use-package lsp-mode
+    :ensure t
+    )
 #+end_src
 ** Julia
 *** Keybindings
@@ -425,6 +438,7 @@ Install lsp-mode
 #+begin_src emacs-lisp
   (use-package julia-mode
     :ensure t
+    :defer t
     :config
     (add-hook 'julia-mode-hook 'julia-repl))
 
@@ -434,7 +448,7 @@ Install lsp-mode
 	     (lambda ()
 	       (set-buffer-process-coding-system 'utf-8-unix 'utf-8-unix))))
   (defadvice ansi-term (after advise-ansi-term-coding-system)
-      (set-process-coding-system 'utf-8-unix 'utf-8-unix))
+    (set-process-coding-system 'utf-8-unix 'utf-8-unix))
   (ad-activate 'ansi-term)
   (set-terminal-coding-system 'utf-8)
 #+end_src
@@ -452,6 +466,7 @@ Install lsp-mode
 #+begin_src emacs-lisp
   (use-package elpy
     :ensure t
+    :defer t
     :init
     (elpy-enable)
     ;; Use jupyter for REPL
@@ -489,6 +504,19 @@ below) with ~(M-x) run-tcl~.
   (setq tcl-application "/home/digvijay/bin/OpenSees")
 #+end_src
 
+** Rust
+I was just exploring ~rust~ and this part of config is bare minimal needed at that time. I am not actively monitoring this part of config.
+#+begin_src emacs-lisp
+  (use-package rust-mode
+    :ensure t
+    :defer t)
+  (use-package rustic
+    :ensure t
+    :defer t)
+#+end_src
+
+#+RESULTS:
+
 
 * LaTeX
 LaTeX setup with live preview and snippets. To use snippets just type first
@@ -512,16 +540,18 @@ code block.
 #+begin_src emacs-lisp
   '(TeX-PDF-mode t)
   (use-package tex
-    :ensure auctex)
+    :ensure auctex
+    :defer t)
   (add-hook 'tex-mode-hook 'lsp-mode)
   (add-hook 'tex-mode-hook 'flycheck-mode)
   ;; Use LatexMK for compiling and inheret pdf setting from auctex
   (use-package auctex-latexmk
-  :ensure t
-  :config
-  (auctex-latexmk-setup)
-  (setq auctex-latexmk-inherit-TeX-PDF-mode t)
-  )
+    :ensure t
+    :defer t
+    :config
+    (auctex-latexmk-setup)
+    (setq auctex-latexmk-inherit-TeX-PDF-mode t)
+    )
   ;; Use RefTeX for citations and references
   (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
   (setq reftex-plug-into-AUCTeX t)

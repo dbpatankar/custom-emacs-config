@@ -16,6 +16,8 @@
    split-width-threshold 0
    split-height-threshold nil)
 
+(defalias 'yes-or-no-p 'y-or-n-p)
+
 (use-package dashboard
   :ensure t
   :custom
@@ -170,10 +172,12 @@
   :ensure t)
 
 (use-package elfeed-goodies
-  :ensure t)
+  :ensure t
+  :defer t)
 
 (use-package elfeed
   :ensure t
+  :defer t
   :config
   (require 'elfeed-goodies)
   (elfeed-goodies/setup)
@@ -182,11 +186,12 @@
 		       ("https://www.reddit.com/r/julia.rss" julia programming reddit)
 		       ("http://timesofindia.indiatimes.com/rssfeedstopstories.cms" TOI news)
 		       ("https://distrowatch.com/news/dw.xml" distrowatch linux)
-                       ("https://rss.slashdot.org/Slashdot/slashdotMain" shashdot linux)
- )))
+		       ("https://rss.slashdot.org/Slashdot/slashdotMain" shashdot linux)
+		       )))
 
 (use-package org
   ;;:ensure t
+  :defer t
   :config
   ;;(variable-pitch-mode nil)
   (setq org-latex-listings 'minted) ;; or t
@@ -219,7 +224,7 @@
 		   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
 		   )))
 
-  ;; (add-hook 'org-mode-hook #'org-inline-pdf-mode)
+  (add-hook 'org-mode-hook #'org-inline-pdf-mode)
   (add-hook 'org-mode-hook
 	    (lambda () (add-hook 'after-save-hook #'org-babel-tangle
 				 :append :local)))
@@ -227,10 +232,12 @@
   )
 
 (use-package toc-org
-  :ensure t)
+  :ensure t
+  :defer t)
 
 (use-package org-superstar
   :ensure t
+  :defer t
   :custom
   (org-superstar-headline-bullets-list '("◉" "○" "✿" "🞛" "✜" "◆" "▶" "✸" "☯" "☯" "☯" "☯" "☯" "☯" ))
   :config
@@ -277,17 +284,17 @@
 (autoload 'lasy-mode "asy-mode.el" "hybrid Asymptote/Latex major mode." t)
 (autoload 'asy-insinuate-latex "asy-mode.el" "Asymptote insinuate LaTeX." t)
 (add-to-list 'auto-mode-alist '("\\.asy$" . asy-mode))
-
 (org-babel-do-load-languages
  'org-babel-load-languages
  '((asymptote . t)))
 
 (use-package lsp-mode
-:ensure t
-)
+  :ensure t
+  )
 
 (use-package julia-mode
   :ensure t
+  :defer t
   :config
   (add-hook 'julia-mode-hook 'julia-repl))
 
@@ -297,12 +304,13 @@
 	   (lambda ()
 	     (set-buffer-process-coding-system 'utf-8-unix 'utf-8-unix))))
 (defadvice ansi-term (after advise-ansi-term-coding-system)
-    (set-process-coding-system 'utf-8-unix 'utf-8-unix))
+  (set-process-coding-system 'utf-8-unix 'utf-8-unix))
 (ad-activate 'ansi-term)
 (set-terminal-coding-system 'utf-8)
 
 (use-package elpy
   :ensure t
+  :defer t
   :init
   (elpy-enable)
   ;; Use jupyter for REPL
@@ -327,18 +335,27 @@
 
 (setq tcl-application "/home/digvijay/bin/OpenSees")
 
+(use-package rust-mode
+  :ensure t
+  :defer t)
+(use-package rustic
+  :ensure t
+  :defer t)
+
 '(TeX-PDF-mode t)
 (use-package tex
-  :ensure auctex)
+  :ensure auctex
+  :defer t)
 (add-hook 'tex-mode-hook 'lsp-mode)
 (add-hook 'tex-mode-hook 'flycheck-mode)
 ;; Use LatexMK for compiling and inheret pdf setting from auctex
 (use-package auctex-latexmk
-:ensure t
-:config
-(auctex-latexmk-setup)
-(setq auctex-latexmk-inherit-TeX-PDF-mode t)
-)
+  :ensure t
+  :defer t
+  :config
+  (auctex-latexmk-setup)
+  (setq auctex-latexmk-inherit-TeX-PDF-mode t)
+  )
 ;; Use RefTeX for citations and references
 (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
 (setq reftex-plug-into-AUCTeX t)
