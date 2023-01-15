@@ -266,8 +266,9 @@
   :config
   (setq bibtex-dialect 'biblatex)
   :bind
+  (:map org-mode-map
   (("C-c c" . org-ref-insert-cite-link)
-   ("C-c r" . org-ref-insert-ref-link))
+   ("C-c r" . org-ref-insert-ref-link)))
   )
 
 (add-to-list 'load-path "/usr/share/asymptote/")
@@ -285,10 +286,17 @@
   :ensure t
   )
 
-(use-package julia-mode
+(use-package julia-repl
   :ensure t
   :config
-  (add-hook 'julia-mode-hook 'julia-repl))
+  ;; For history in REPL on term other than vterm
+  (defun term-send-up () (interactive) (term-send-raw-string "\e[A"))
+  (defun term-send-down () (interactive) (term-send-raw-string "\e[B")))
+
+(use-package julia-mode
+  :ensure t
+  :init
+  (add-hook 'julia-mode-hook 'julia-repl-mode))
 
 ;; UNICODE support
 (add-hook 'term-exec-hook
