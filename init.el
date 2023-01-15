@@ -32,14 +32,14 @@
 (use-package leuven-theme
   :ensure t
   :config
-  (load-theme 'leuven-dark t)
-)
+  )
 
 (use-package doom-themes
   :ensure t
   :config
-  ;;(load-theme 'doom-dracula t)
-)
+  )
+
+(load-theme 'leuven-dark t)
 
 (use-package doom-modeline
   :ensure t
@@ -94,7 +94,6 @@
 
 (use-package smex   ;; recent commands in counsel-M-x
   :ensure t
-  :defer 1
   :after counsel)
 
 (use-package ivy
@@ -172,12 +171,10 @@
   :ensure t)
 
 (use-package elfeed-goodies
-  :ensure t
-  :defer t)
+  :ensure t)
 
 (use-package elfeed
   :ensure t
-  :defer t
   :config
   (require 'elfeed-goodies)
   (elfeed-goodies/setup)
@@ -191,7 +188,6 @@
 
 (use-package org
   ;;:ensure t
-  :defer t
   :config
   ;;(variable-pitch-mode nil)
   (setq org-latex-listings 'minted) ;; or t
@@ -232,12 +228,10 @@
   )
 
 (use-package toc-org
-  :ensure t
-  :defer t)
+  :ensure t)
 
 (use-package org-superstar
   :ensure t
-  :defer t
   :custom
   (org-superstar-headline-bullets-list '("◉" "○" "✿" "🞛" "✜" "◆" "▶" "✸" "☯" "☯" "☯" "☯" "☯" "☯" ))
   :config
@@ -265,7 +259,6 @@
 (use-package org-ref
   :ensure t
   :after org
-  ;; :defer t
   :init
   ;;(require 'org-ref-helm)
   (require 'org-ref-ivy)
@@ -294,7 +287,6 @@
 
 (use-package julia-mode
   :ensure t
-  :defer t
   :config
   (add-hook 'julia-mode-hook 'julia-repl))
 
@@ -310,7 +302,6 @@
 
 (use-package elpy
   :ensure t
-  :defer t
   :init
   (elpy-enable)
   ;; Use jupyter for REPL
@@ -333,25 +324,21 @@
     (add-hook 'elpy-mode-hook 'flycheck-mode))
   )
 
-(setq tcl-application "/home/digvijay/bin/OpenSees")
+(setq tcl-application "~/bin/OpenSees")
 
 (use-package rust-mode
-  :ensure t
-  :defer t)
+  :ensure t)
 (use-package rustic
-  :ensure t
-  :defer t)
+  :ensure t)
 
 '(TeX-PDF-mode t)
 (use-package tex
-  :ensure auctex
-  :defer t)
+  :ensure auctex)
 (add-hook 'tex-mode-hook 'lsp-mode)
 (add-hook 'tex-mode-hook 'flycheck-mode)
 ;; Use LatexMK for compiling and inheret pdf setting from auctex
 (use-package auctex-latexmk
   :ensure t
-  :defer t
   :config
   (auctex-latexmk-setup)
   (setq auctex-latexmk-inherit-TeX-PDF-mode t)

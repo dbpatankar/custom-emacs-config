@@ -77,13 +77,10 @@ This file contains my custom emacs config to mimic doomemacs config as much as p
 #+end_src
 
 ** yes-no to y-n
+Replace "Yes-No" answer options to "y-n" everywhere.
 #+begin_src emacs-lisp
   (defalias 'yes-or-no-p 'y-or-n-p)
 #+end_src
-
-#+RESULTS:
-: yes-or-no-p
-
 
 * Theming
 #+begin_src emacs-lisp
@@ -101,14 +98,14 @@ This file contains my custom emacs config to mimic doomemacs config as much as p
   (use-package leuven-theme
     :ensure t
     :config
-    (load-theme 'leuven-dark t)
-  )
+    )
 
   (use-package doom-themes
     :ensure t
     :config
-    ;;(load-theme 'doom-dracula t)
-  )
+    )
+
+  (load-theme 'leuven-dark t)
 
   (use-package doom-modeline
     :ensure t
@@ -159,9 +156,6 @@ This file contains my custom emacs config to mimic doomemacs config as much as p
     (setq evil-intercept-maps nil))
 #+end_src
 
-#+RESULTS:
-: t
-
 * Search and filter
 #+begin_src emacs-lisp
   (use-package counsel
@@ -172,7 +166,6 @@ This file contains my custom emacs config to mimic doomemacs config as much as p
 
   (use-package smex   ;; recent commands in counsel-M-x
     :ensure t
-    :defer 1
     :after counsel)
 
   (use-package ivy
@@ -282,12 +275,10 @@ followed by ~TAB~. The mode is enabled globally.
 A RSS feed reader.
 #+begin_src emacs-lisp
   (use-package elfeed-goodies
-    :ensure t
-    :defer t)
+    :ensure t)
 
   (use-package elfeed
     :ensure t
-    :defer t
     :config
     (require 'elfeed-goodies)
     (elfeed-goodies/setup)
@@ -304,7 +295,6 @@ Colour output for code snippets in ~LaTeX~ using ~minted~ and some other ~LaTeX~
 #+begin_src emacs-lisp
   (use-package org
     ;;:ensure t
-    :defer t
     :config
     ;;(variable-pitch-mode nil)
     (setq org-latex-listings 'minted) ;; or t
@@ -348,15 +338,13 @@ Colour output for code snippets in ~LaTeX~ using ~minted~ and some other ~LaTeX~
 ** Toc-org
 #+begin_src emacs-lisp
   (use-package toc-org
-    :ensure t
-    :defer t)
+    :ensure t)
 #+end_src
 ** Org-superstar
 For fancy bullets in org mode. Org-bullets is outdated.
 #+begin_src emacs-lisp
   (use-package org-superstar
     :ensure t
-    :defer t
     :custom
     (org-superstar-headline-bullets-list '("◉" "○" "✿" "🞛" "✜" "◆" "▶" "✸" "☯" "☯" "☯" "☯" "☯" "☯" ))
     :config
@@ -394,7 +382,6 @@ The default citation type is ~autocite~ defined using ~org-ref-default-citation-
   (use-package org-ref
     :ensure t
     :after org
-    ;; :defer t
     :init
     ;;(require 'org-ref-helm)
     (require 'org-ref-ivy)
@@ -438,7 +425,6 @@ Install lsp-mode
 #+begin_src emacs-lisp
   (use-package julia-mode
     :ensure t
-    :defer t
     :config
     (add-hook 'julia-mode-hook 'julia-repl))
 
@@ -466,7 +452,6 @@ Install lsp-mode
 #+begin_src emacs-lisp
   (use-package elpy
     :ensure t
-    :defer t
     :init
     (elpy-enable)
     ;; Use jupyter for REPL
@@ -501,18 +486,16 @@ below) with ~(M-x) run-tcl~.
 | Switch to tcl repl       | C-c C-s    | switch-to-tcl    |
 | Load/source file in repl | C-c C-f    | tcl-load-file    |
 #+begin_src emacs-lisp
-  (setq tcl-application "/home/digvijay/bin/OpenSees")
+  (setq tcl-application "~/bin/OpenSees")
 #+end_src
 
 ** Rust
 I was just exploring ~rust~ and this part of config is bare minimal needed at that time. I am not actively monitoring this part of config.
 #+begin_src emacs-lisp
   (use-package rust-mode
-    :ensure t
-    :defer t)
+    :ensure t)
   (use-package rustic
-    :ensure t
-    :defer t)
+    :ensure t)
 #+end_src
 
 #+RESULTS:
@@ -540,14 +523,12 @@ code block.
 #+begin_src emacs-lisp
   '(TeX-PDF-mode t)
   (use-package tex
-    :ensure auctex
-    :defer t)
+    :ensure auctex)
   (add-hook 'tex-mode-hook 'lsp-mode)
   (add-hook 'tex-mode-hook 'flycheck-mode)
   ;; Use LatexMK for compiling and inheret pdf setting from auctex
   (use-package auctex-latexmk
     :ensure t
-    :defer t
     :config
     (auctex-latexmk-setup)
     (setq auctex-latexmk-inherit-TeX-PDF-mode t)
@@ -583,6 +564,9 @@ code block.
   ;;    )
   ;;   )
 #+end_src
+
+#+RESULTS:
+: t
 
 * Custom
 #+begin_src emacs-lisp
