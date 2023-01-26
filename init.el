@@ -1,7 +1,7 @@
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 
-(menu-bar-mode -1)
+(menu-bar-mode 1)
 (scroll-bar-mode -1)
 (tool-bar-mode -1)
 
@@ -39,7 +39,8 @@
   :config
   )
 
-(load-theme 'leuven-dark t)
+;;(load-theme 'leuven-dark t)
+(load-theme 'spacemacs-dark t)
 
 (use-package doom-modeline
   :ensure t
@@ -131,6 +132,12 @@
   :config
   (vertico-mode 1))
 
+(use-package marginalia
+:ensure t
+:after vertico
+:init
+(marginalia-mode))
+
 (use-package helpful  ;; probably not needed. Can be commented
   :ensure t
   :custom
@@ -185,6 +192,9 @@
 		       ("https://distrowatch.com/news/dw.xml" distrowatch linux)
 		       ("https://rss.slashdot.org/Slashdot/slashdotMain" shashdot linux)
 		       )))
+
+(use-package compat
+:ensure t)
 
 (use-package org
   ;;:ensure t
@@ -351,6 +361,10 @@
   (auctex-latexmk-setup)
   (setq auctex-latexmk-inherit-TeX-PDF-mode t)
   )
+(add-to-list 'TeX-command-list
+	     '("LatexMK-lua" "latexmk -lualatex -pdflua %S%(mode) %(file-line-error) %(extraopts) %t" TeX-run-latexmk nil
+	       (plain-tex-mode latex-mode doctex-mode)
+	       :help "Run LatexMK-lua"))
 ;; Use RefTeX for citations and references
 (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
 (setq reftex-plug-into-AUCTeX t)

@@ -24,6 +24,7 @@
   - [[#flycheck][Flycheck]]
   - [[#yasnippet][Yasnippet]]
   - [[#elfeed][Elfeed]]
+  - [[#compat][compat]]
 - [[#org-mode][ORG mode]]
   - [[#toc-org][Toc-org]]
   - [[#org-superstar][Org-superstar]]
@@ -47,10 +48,12 @@ This file contains my custom emacs config to mimic doomemacs config as much as p
 
 ** Remove unnecessary window decorations
 #+begin_src emacs-lisp
-  (menu-bar-mode -1)
+  (menu-bar-mode 1)
   (scroll-bar-mode -1)
   (tool-bar-mode -1)
 #+end_src
+
+#+RESULTS:
 
 ** Line numbers
 #+begin_src emacs-lisp
@@ -105,7 +108,8 @@ Replace "Yes-No" answer options to "y-n" everywhere.
     :config
     )
 
-  (load-theme 'leuven-dark t)
+  ;;(load-theme 'leuven-dark t)
+  (load-theme 'spacemacs-dark t)
 
   (use-package doom-modeline
     :ensure t
@@ -202,7 +206,15 @@ Replace "Yes-No" answer options to "y-n" everywhere.
     :ensure t
     :config
     (vertico-mode 1))
+
+  (use-package marginalia
+  :ensure t
+  :after vertico
+  :init
+  (marginalia-mode))
 #+end_src
+
+#+RESULTS:
 
 * Completion framework
 Company mode
@@ -290,6 +302,14 @@ A RSS feed reader.
 			 ("https://rss.slashdot.org/Slashdot/slashdotMain" shashdot linux)
 			 )))
 #+end_src
+
+** compat
+Required by maggit
+#+begin_src emacs-lisp
+  (use-package compat
+  :ensure t)
+#+end_src
+
 * ORG mode
 Colour output for code snippets in ~LaTeX~ using ~minted~ and some other ~LaTeX~ export stuff. Also includes for config for ~org-ref~.
 #+begin_src emacs-lisp
@@ -541,6 +561,10 @@ code block.
     (auctex-latexmk-setup)
     (setq auctex-latexmk-inherit-TeX-PDF-mode t)
     )
+  (add-to-list 'TeX-command-list
+	       '("LatexMK-lua" "latexmk -lualatex -pdflua %S%(mode) %(file-line-error) %(extraopts) %t" TeX-run-latexmk nil
+		 (plain-tex-mode latex-mode doctex-mode)
+		 :help "Run LatexMK-lua"))
   ;; Use RefTeX for citations and references
   (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
   (setq reftex-plug-into-AUCTeX t)
