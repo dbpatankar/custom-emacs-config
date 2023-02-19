@@ -6,12 +6,14 @@
 * Contents                                                          :TOC:
 - [[#introduction][Introduction]]
   - [[#add-melpa-repository][Add MELPA repository]]
-  - [[#remove-unnecessary-window-decorations][Remove unnecessary window decorations]]
+  - [[#exec-path-same-as-path][exec-path same as PATH]]
+  - [[#remove-some-window-decorations-and-add-some][Remove some window decorations and add some]]
   - [[#line-numbers][Line numbers]]
   - [[#visual-line-mode][Visual line mode]]
   - [[#global-auto-revert][Global auto revert]]
   - [[#split-windows-vertically-by-default][Split windows vertically by default]]
   - [[#yes-no-to-y-n][yes-no to y-n]]
+  - [[#backup-files-in-tmp][Backup files in tmp]]
 - [[#theming][Theming]]
 - [[#evil-and-keymap][EVIL and keymap]]
 - [[#search-and-filter][Search and filter]]
@@ -40,20 +42,40 @@
 
 * Introduction
 This file contains my custom emacs config to mimic doomemacs config as much as possible. It also tries to add a few more features I need.
+
 ** Add MELPA repository
 #+begin_src emacs-lisp
   (require 'package)
   (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 #+end_src
 
-** Remove unnecessary window decorations
+** exec-path same as PATH
+exec-path is emacs path where shells in emacs search for executables. It is also used by emacs for finding executables for various commands. The below snippet is from [[https://www.emacswiki.org/emacs/ExecPath][emacswiki]]. More details can be found on the [[https://www.emacswiki.org/emacs/ExecPath][wiki page]]. 
+#+begin_src emacs-lisp
+  (defun set-exec-path-from-shell-PATH ()
+    "Set up Emacs' `exec-path' and PATH environment variable to match
+  that used by the user's shell.
+  This is particularly useful under Mac OS X and macOS, where GUI
+  apps are not started from a shell."
+    (interactive)
+    (let ((path-from-shell (replace-regexp-in-string
+			    "[ \t\n]*$" "" (shell-command-to-string
+					    "$SHELL --login -c 'echo $PATH'"
+					    ))))
+      (setenv "PATH" path-from-shell)
+      (setq exec-path (split-string path-from-shell path-separator))))
+  (setenv "PATH" (concat "/media/digvijay/39d16e25-cb72-4236-861c-c5e57ae445bb/digvijay/tmp/texlive/2022/bin/x86_64-linux:" (getenv "PATH")))
+  (set-exec-path-from-shell-PATH)
+#+end_src
+
+** Remove some window decorations and add some
 #+begin_src emacs-lisp
   (menu-bar-mode 1)
   (scroll-bar-mode -1)
   (tool-bar-mode -1)
+  (column-number-mode 1)
+  (global-goto-address-mode 1)
 #+end_src
-
-#+RESULTS:
 
 ** Line numbers
 #+begin_src emacs-lisp
@@ -83,6 +105,14 @@ This file contains my custom emacs config to mimic doomemacs config as much as p
 Replace "Yes-No" answer options to "y-n" everywhere.
 #+begin_src emacs-lisp
   (defalias 'yes-or-no-p 'y-or-n-p)
+#+end_src
+
+** Backup files in tmp
+#+begin_src emacs-lisp
+  (setq backup-directory-alist
+	`((".*" . ,temporary-file-directory)))
+  (setq auto-save-file-name-transforms
+	`((".*" ,temporary-file-directory t)))
 #+end_src
 
 * Theming
@@ -392,7 +422,7 @@ For fancy bullets in org mode. Org-bullets is outdated.
 ** Org-ref
 The default citation type is ~autocite~ defined using ~org-ref-default-citation-link~. Different citation types such as ~cite~, ~citep~ etc can be given instead of ~autocite~ by changing the variable. The variable must be in ~:init~ block so that it can be evaluated before loading the package. Keeping it in the ~:config~ block doesn't work. List of all such types can be seen in the documentation of ~org-ref-cite-types~.
 
-~Org-ref~ provides multiple actions on cite keys such as open the bibentry, open pdf etc. Just click on the cite key to see the possible actions. 
+~Org-ref~ provides multiple actions on cite keys such as open the bibentry, open pdf etc. Just click on the cite key to see the possible actions.
 *** Keybindings
 | Action           | Keybinding | Function/command         |
 |------------------+------------+--------------------------|

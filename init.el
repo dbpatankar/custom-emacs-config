@@ -1,9 +1,26 @@
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 
+(defun set-exec-path-from-shell-PATH ()
+  "Set up Emacs' `exec-path' and PATH environment variable to match
+that used by the user's shell.
+This is particularly useful under Mac OS X and macOS, where GUI
+apps are not started from a shell."
+  (interactive)
+  (let ((path-from-shell (replace-regexp-in-string
+			  "[ \t\n]*$" "" (shell-command-to-string
+					  "$SHELL --login -c 'echo $PATH'"
+					  ))))
+    (setenv "PATH" path-from-shell)
+    (setq exec-path (split-string path-from-shell path-separator))))
+(setenv "PATH" (concat "/media/digvijay/39d16e25-cb72-4236-861c-c5e57ae445bb/digvijay/tmp/texlive/2022/bin/x86_64-linux:" (getenv "PATH")))
+(set-exec-path-from-shell-PATH)
+
 (menu-bar-mode 1)
 (scroll-bar-mode -1)
 (tool-bar-mode -1)
+(column-number-mode 1)
+(global-goto-address-mode 1)
 
 (global-display-line-numbers-mode 1)
 (setq display-line-numbers-type 'relative)
@@ -17,6 +34,11 @@
    split-height-threshold nil)
 
 (defalias 'yes-or-no-p 'y-or-n-p)
+
+(setq backup-directory-alist
+      `((".*" . ,temporary-file-directory)))
+(setq auto-save-file-name-transforms
+      `((".*" ,temporary-file-directory t)))
 
 (use-package dashboard
   :ensure t
