@@ -39,7 +39,9 @@
   - [[#tcl][TCL]]
   - [[#rust][Rust]]
 - [[#latex][LaTeX]]
-- [[#custom][Custom]]
+  - [[#reftex][reftex]]
+  - [[#helm][helm]]
+  - [[#ivy][ivy]]
 
 * Introduction
 This file contains my custom emacs config to mimic doomemacs config as much as possible. It also tries to add a few more features I need.
@@ -126,21 +128,17 @@ Replace "Yes-No" answer options to "y-n" everywhere.
     (dashboard-mode)
     (dashboard-refresh-buffer))
 
-  ;;(use-package spacemacs-theme
-  ;;  :ensure t)
-
   (use-package leuven-theme
-    :ensure t
-    :config
-    )
+    :ensure t)
 
   (use-package doom-themes
-    :ensure t
-    :config
-    )
+    :ensure t)
 
-  ;;(load-theme 'leuven-dark t)
-  (load-theme 'spacemacs-dark t)
+  (load-theme 'leuven-dark t)
+  
+  ;;(use-package spacemacs-theme
+  ;;  :ensure t)
+  ;;(load-theme 'spacemacs-dark t)
 
   (use-package doom-modeline
     :ensure t
@@ -329,11 +327,6 @@ Required by magit
 * ORG mode
 Colour output for code snippets in ~LaTeX~ using ~minted~ and some other ~LaTeX~ export stuff. Also includes for config for ~org-ref~.
 #+begin_src emacs-lisp
-  (use-package org-inline-pdf  ;; For inline display of pdf files
-  :ensure t
-  :hook
-  ((org-mode . org-inline-pdf-mode)))
-
   (use-package org
     ;;:ensure t
     :config
@@ -342,6 +335,7 @@ Colour output for code snippets in ~LaTeX~ using ~minted~ and some other ~LaTeX~
     (add-to-list 'org-latex-packages-alist '("" "minted")) ;; or listings
     (add-to-list 'org-latex-packages-alist '("" "xcolor"))
     (setq bibtex-dialect 'biblatex)
+    (setq org-latex-compiler "lualatex")
     (setq  org-latex-pdf-process '("latexmk -shell-escape -%latex -bibtex -interaction=nonstopmode -f -pdf %f"))
     (with-eval-after-load 'ox-latex
       (add-to-list 'org-latex-classes
@@ -369,8 +363,12 @@ Colour output for code snippets in ~LaTeX~ using ~minted~ and some other ~LaTeX~
 		     )))
     (add-hook 'org-mode-hook
 	      (lambda () (add-hook 'after-save-hook #'org-babel-tangle
-				   :append :local)))
-  )
+				   :append :local))))
+#+end_src
+#+begin_src emacs-lisp
+  (use-package org-inline-pdf  ;; For inline display of pdf files
+  :ensure t
+  :hook ((org-mode . org-inline-pdf-mode)))
 #+end_src
 
 ** Toc-org
@@ -406,8 +404,7 @@ For fancy bullets in org mode. Org-bullets is outdated.
     ;;                 :height 2.074
     ;;                 :foreground 'unspecified
     ;;                 :inherit 'org-level-8)
-  :hook ((org-mode . org-superstar-mode))
-    )
+    :hook ((org-mode . org-superstar-mode)))
 #+end_src
 
 ** Org-ref
@@ -426,21 +423,17 @@ The default citation type is ~autocite~ defined using ~org-ref-default-citation-
     :init
     (require 'org-ref-helm)  ;; helm plays well with org-ref
     ;;(require 'org-ref-ivy)
-  :custom
+    :custom
     (org-ref-default-citation-link "autocite")
     (org-ref-default-bibliography "/home/digvijay/Documents/manuscripts/report.bib")
     :config
     (setq bibtex-dialect 'biblatex)
-  :hook
-  ((org-roam-mode . org-ref-mode))
+    :hook ((org-roam-mode . org-ref-mode))
     :bind
     (:map org-mode-map
 	  (("C-c c" . org-ref-insert-cite-link)
 	   ("C-c r" . org-ref-insert-ref-link))))
 #+end_src
-
-#+RESULTS:
-: org-ref-insert-ref-link
 
 ** Org-roam
 #+begin_src emacs-lisp
@@ -463,8 +456,7 @@ The default citation type is ~autocite~ defined using ~org-ref-default-citation-
     ("C-c n d" . org-roam-dailies-map)
     :config
     (require 'org-roam-dailies) ;; Ensure the keymap is available
-    (org-roam-db-autosync-mode)
-    )
+    (org-roam-db-autosync-mode))
 
   (use-package org-roam-bibtex
     :ensure t
@@ -500,9 +492,6 @@ Install lsp-mode
     ((python-mode . lsp-mode)
      (julia-mode . lsp-mode)))
 #+end_src
-
-#+RESULTS:
-| lsp-mode | rainbow-delimiters-mode |
 
 ** Julia
 *** Keybindings
@@ -561,14 +550,7 @@ Install lsp-mode
 	  python-shell-interpreter-args
 	  "-i --simple-prompt --InteractiveShell.display_page=True"
 	  python-shell-prompt-detect-failure-warning nil)
-    (add-to-list 'python-shell-completion-native-disabled-interpreters
-		 "ipython")
-
-    ;; Enable Flycheck
-    ;; (when (require 'flycheck nil t)
-    ;;   (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
-    ;;   (add-hook 'elpy-mode-hook 'flycheck-mode))
-    )
+    (add-to-list 'python-shell-completion-native-disabled-interpreters "ipython")
 #+end_src
 
 ** TCL
@@ -594,9 +576,6 @@ I was just exploring ~rust~ and this part of config is bare minimal needed at th
     :ensure t)
 #+end_src
 
-#+RESULTS:
-
-
 * LaTeX
 LaTeX setup with live preview and snippets. To use snippets just type first
 three characters of environment name (ex: fig for figure) and then hit
@@ -614,7 +593,7 @@ code block.
 *** Keybindings
 | Action                | Keybinding  | Function/command |
 |-----------------------+-------------+------------------|
-| Compile latex         | C-c C-c     |                  |
+| Compile document      | C-c C-c     |                  |
 | live-preview at point | C-c C-p C-p |                  |
 #+begin_src emacs-lisp
   '(TeX-PDF-mode t)
@@ -623,8 +602,6 @@ code block.
   (use-package tex
     :ensure auctex)
 
-  ;; (add-hook 'tex-mode-hook #'lsp-mode)
-  ;; (add-hook 'tex-mode-hook #'flycheck-mode)
   ;; Use LatexMK for compiling and inheret pdf setting from auctex
   (use-package auctex-latexmk
     :ensure t
@@ -632,14 +609,23 @@ code block.
     (auctex-latexmk-setup)
     (setq auctex-latexmk-inherit-TeX-PDF-mode t))
 
+  ;; Add lualatex to the command list
   (add-to-list 'TeX-command-list
 	       '("LatexMK-lua" "latexmk -lualatex -pdflua %S%(mode) %(file-line-error) %(extraopts) %t" TeX-run-latexmk nil
 		 (plain-tex-mode latex-mode doctex-mode)
 		 :help "Run LatexMK-lua"))
+#+end_src
+** reftex
+Use RefTeX for citations and references
+#+begin_src emacs-lisp
   ;; Use RefTeX for citations and references
   ;;(add-hook 'LaTeX-mode-hook 'turn-on-reftex)
   ;;(setq reftex-plug-into-AUCTeX t)
-  ;; Use helm-bibtex for references and citations
+#+end_src
+** helm
+Use helm with latex for citations
+#+begin_src emacs-lisp
+  ;; Use helm-bibtex for citations
   (use-package helm
   :ensure t)
   (use-package helm-bibtex
@@ -648,8 +634,11 @@ code block.
   (setq bibtex-completion-bibliography
       '("/home/digvijay/Documents/manuscripts/report.bib"))
   (autoload 'helm-bibtex "helm-bibtex" "" t))
-
-  ;; ;; Use ivy-bibtex for citations and references
+#+end_src
+** ivy
+Use ivy-bibtex for citations
+#+begin_src emacs-lisp
+  ;; ;; Use ivy-bibtex for citations 
   ;; (use-package ivy-bibtex
   ;;   :ensure t
   ;;   :config
@@ -668,22 +657,3 @@ code block.
   ;;   (("C-c c" . ivy-bibtex-with-local-bibliography)))
 #+end_src
 
-#+RESULTS:
-: t
-
-* Custom
-#+begin_src emacs-lisp
-  (custom-set-variables
-   ;; custom-set-variables was added by Custom.
-   ;; If you edit it by hand, you could mess it up, so be careful.
-   ;; Your init file should contain only one such instance.
-   ;; If there is more than one, they won't work right.
-   '(package-selected-packages
-     '(helpful smex rainbow-delimiters ivy-rich doom-modeline dashboard julia-mode julia-repl orderless magit evil-leader counsel ivy org which-key vertico use-package evil doom-themes)))
-  (custom-set-faces
-   ;; custom-set-faces was added by Custom.
-   ;; If you edit it by hand, you could mess it up, so be careful.
-   ;; Your init file should contain only one such instance.
-   ;; If there is more than one, they won't work right.
-   )
-#+end_src

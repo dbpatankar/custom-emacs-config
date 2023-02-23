@@ -48,21 +48,17 @@ apps are not started from a shell."
   (dashboard-mode)
   (dashboard-refresh-buffer))
 
-;;(use-package spacemacs-theme
-;;  :ensure t)
-
 (use-package leuven-theme
-  :ensure t
-  :config
-  )
+  :ensure t)
 
 (use-package doom-themes
-  :ensure t
-  :config
-  )
+  :ensure t)
 
-;;(load-theme 'leuven-dark t)
-(load-theme 'spacemacs-dark t)
+(load-theme 'leuven-dark t)
+
+;;(use-package spacemacs-theme
+;;  :ensure t)
+;;(load-theme 'spacemacs-dark t)
 
 (use-package doom-modeline
   :ensure t
@@ -206,11 +202,6 @@ apps are not started from a shell."
 (use-package compat
 :ensure t)
 
-(use-package org-inline-pdf  ;; For inline display of pdf files
-:ensure t
-:hook
-((org-mode . org-inline-pdf-mode)))
-
 (use-package org
   ;;:ensure t
   :config
@@ -219,6 +210,7 @@ apps are not started from a shell."
   (add-to-list 'org-latex-packages-alist '("" "minted")) ;; or listings
   (add-to-list 'org-latex-packages-alist '("" "xcolor"))
   (setq bibtex-dialect 'biblatex)
+  (setq org-latex-compiler "lualatex")
   (setq  org-latex-pdf-process '("latexmk -shell-escape -%latex -bibtex -interaction=nonstopmode -f -pdf %f"))
   (with-eval-after-load 'ox-latex
     (add-to-list 'org-latex-classes
@@ -246,8 +238,11 @@ apps are not started from a shell."
 		   )))
   (add-hook 'org-mode-hook
 	    (lambda () (add-hook 'after-save-hook #'org-babel-tangle
-				 :append :local)))
-)
+				 :append :local))))
+
+(use-package org-inline-pdf  ;; For inline display of pdf files
+:ensure t
+:hook ((org-mode . org-inline-pdf-mode)))
 
 (use-package toc-org
   :ensure t
@@ -277,8 +272,7 @@ apps are not started from a shell."
   ;;                 :height 2.074
   ;;                 :foreground 'unspecified
   ;;                 :inherit 'org-level-8)
-:hook ((org-mode . org-superstar-mode))
-  )
+  :hook ((org-mode . org-superstar-mode)))
 
 (use-package org-ref
   :ensure t
@@ -286,13 +280,12 @@ apps are not started from a shell."
   :init
   (require 'org-ref-helm)  ;; helm plays well with org-ref
   ;;(require 'org-ref-ivy)
-:custom
+  :custom
   (org-ref-default-citation-link "autocite")
   (org-ref-default-bibliography "/home/digvijay/Documents/manuscripts/report.bib")
   :config
   (setq bibtex-dialect 'biblatex)
-:hook
-((org-roam-mode . org-ref-mode))
+  :hook ((org-roam-mode . org-ref-mode))
   :bind
   (:map org-mode-map
 	(("C-c c" . org-ref-insert-cite-link)
@@ -317,8 +310,7 @@ apps are not started from a shell."
   ("C-c n d" . org-roam-dailies-map)
   :config
   (require 'org-roam-dailies) ;; Ensure the keymap is available
-  (org-roam-db-autosync-mode)
-  )
+  (org-roam-db-autosync-mode))
 
 (use-package org-roam-bibtex
   :ensure t
@@ -382,14 +374,7 @@ apps are not started from a shell."
 	python-shell-interpreter-args
 	"-i --simple-prompt --InteractiveShell.display_page=True"
 	python-shell-prompt-detect-failure-warning nil)
-  (add-to-list 'python-shell-completion-native-disabled-interpreters
-	       "ipython")
-
-  ;; Enable Flycheck
-  ;; (when (require 'flycheck nil t)
-  ;;   (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
-  ;;   (add-hook 'elpy-mode-hook 'flycheck-mode))
-  )
+  (add-to-list 'python-shell-completion-native-disabled-interpreters "ipython")
 
 (setq tcl-application "~/bin/OpenSees")
 
@@ -404,8 +389,6 @@ apps are not started from a shell."
 (use-package tex
   :ensure auctex)
 
-;; (add-hook 'tex-mode-hook #'lsp-mode)
-;; (add-hook 'tex-mode-hook #'flycheck-mode)
 ;; Use LatexMK for compiling and inheret pdf setting from auctex
 (use-package auctex-latexmk
   :ensure t
@@ -413,14 +396,17 @@ apps are not started from a shell."
   (auctex-latexmk-setup)
   (setq auctex-latexmk-inherit-TeX-PDF-mode t))
 
+;; Add lualatex to the command list
 (add-to-list 'TeX-command-list
 	     '("LatexMK-lua" "latexmk -lualatex -pdflua %S%(mode) %(file-line-error) %(extraopts) %t" TeX-run-latexmk nil
 	       (plain-tex-mode latex-mode doctex-mode)
 	       :help "Run LatexMK-lua"))
+
 ;; Use RefTeX for citations and references
 ;;(add-hook 'LaTeX-mode-hook 'turn-on-reftex)
 ;;(setq reftex-plug-into-AUCTeX t)
-;; Use helm-bibtex for references and citations
+
+;; Use helm-bibtex for citations
 (use-package helm
 :ensure t)
 (use-package helm-bibtex
@@ -430,7 +416,7 @@ apps are not started from a shell."
     '("/home/digvijay/Documents/manuscripts/report.bib"))
 (autoload 'helm-bibtex "helm-bibtex" "" t))
 
-;; ;; Use ivy-bibtex for citations and references
+;; ;; Use ivy-bibtex for citations 
 ;; (use-package ivy-bibtex
 ;;   :ensure t
 ;;   :config
@@ -447,17 +433,3 @@ apps are not started from a shell."
 ;;   (setq bibtex-completion-cite-prompt-for-optional-arguments nil)
 ;;   :bind
 ;;   (("C-c c" . ivy-bibtex-with-local-bibliography)))
-
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(helpful smex rainbow-delimiters ivy-rich doom-modeline dashboard julia-mode julia-repl orderless magit evil-leader counsel ivy org which-key vertico use-package evil doom-themes)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
