@@ -151,6 +151,7 @@ Replace "Yes-No" answer options to "y-n" everywhere.
 #+end_src
 
 * EVIL and keymap
+Thinking of removing evil completely as I get used to emacs keychords. However, there are some vim motions that I find difficult to let go. So this section won't have much updates. Any new keybindings I introduce will most likely be closer to emacs and in their own section.
 #+begin_src emacs-lisp
   (use-package evil-leader
     :ensure t
@@ -169,8 +170,7 @@ Replace "Yes-No" answer options to "y-n" everywhere.
       "g g" 'magit
       "w v" 'evil-window-vsplit
       "w w" 'evil-window-next
-      "w c" 'evil-window-delete
-      )
+      "w c" 'evil-window-delete)
     (evil-leader/set-key-for-mode 'org-mode
       "m e" 'org-export-dispatch
       "m @" 'org-ref-insert-cite-link
@@ -179,7 +179,6 @@ Replace "Yes-No" answer options to "y-n" everywhere.
       "c c" 'julia-repl-send-region-or-line
       "c b" 'julia-repl-send-buffer)
     )
-
 
   (use-package evil
     :ensure t
@@ -590,6 +589,9 @@ code block.
 %%% TeX-command-extra-options: "-shell-escape"
 %%% End:
 #+end_example
+
+For citations use any of the three from RefTeX, helm-bibtex and ivy-bibtex. Currently I am using helm and helm-bibtex for the purpose. Though using helm for only this thing seems odd, I do not have other working solution with ivy-bibtex or reftex which provides me with the necessary functionality. The config below for ivy-bibtex and reftex are sufficient for basic use cases.
+
 *** Keybindings
 | Action                | Keybinding  | Function/command |
 |-----------------------+-------------+------------------|

@@ -86,8 +86,7 @@ apps are not started from a shell."
     "g g" 'magit
     "w v" 'evil-window-vsplit
     "w w" 'evil-window-next
-    "w c" 'evil-window-delete
-    )
+    "w c" 'evil-window-delete)
   (evil-leader/set-key-for-mode 'org-mode
     "m e" 'org-export-dispatch
     "m @" 'org-ref-insert-cite-link
@@ -96,7 +95,6 @@ apps are not started from a shell."
     "c c" 'julia-repl-send-region-or-line
     "c b" 'julia-repl-send-buffer)
   )
-
 
 (use-package evil
   :ensure t
