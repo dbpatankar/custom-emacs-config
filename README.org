@@ -31,6 +31,7 @@
   - [[#toc-org][Toc-org]]
   - [[#org-superstar][Org-superstar]]
   - [[#org-ref][Org-ref]]
+  - [[#org-roam][Org-roam]]
   - [[#asymptote][Asymptote]]
 - [[#programming-languages][Programming languages]]
   - [[#julia][Julia]]
@@ -205,55 +206,43 @@ Replace "Yes-No" answer options to "y-n" everywhere.
   (use-package ivy
     :ensure t
     :config
-      (ivy-mode)
-      (setq ivy-use-virtual-buffers t)
-      (setq enable-recursive-minibuffers t)
-      ;; enable this if you want `swiper' to use it
-      (setq search-default-mode #'char-fold-to-regexp)
-      (global-set-key "\C-s" 'swiper-isearch)
-      ;;(global-set-key (kbd "M-x") 'counsel-M-x)
-      (global-set-key (kbd "C-x C-f") 'counsel-find-file)
-      (global-set-key (kbd "<f1> f") 'counsel-describe-function)
-      (global-set-key (kbd "<f1> v") 'counsel-describe-variable)
-      (global-set-key (kbd "<f1> o") 'counsel-describe-symbol)
-      (global-set-key (kbd "<f1> l") 'counsel-find-library)
-      (global-set-key (kbd "<f2> i") 'counsel-info-lookup-symbol)
-      (global-set-key (kbd "<f2> u") 'counsel-unicode-char)
-      (global-set-key (kbd "C-c g") 'counsel-git)
-      (global-set-key (kbd "C-c j") 'counsel-git-grep)
-      (global-set-key (kbd "C-c k") 'counsel-ag)
-      (global-set-key (kbd "C-x l") 'counsel-locate)
-      (global-set-key (kbd "C-S-o") 'counsel-rhythmbox)
-      ;;(global-set-key (kbd "SPC-b b") 'ivy-switch-buffer)
-      (define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history))
+    (ivy-mode)
+    (setq ivy-use-virtual-buffers t)
+    (setq enable-recursive-minibuffers t)
+    ;; enable this if you want `swiper' to use it
+    (setq search-default-mode #'char-fold-to-regexp)
+    (global-set-key "\C-s" 'swiper-isearch)
+    ;;(global-set-key (kbd "M-x") 'counsel-M-x)
+    (define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history))
 
   (use-package ivy-rich
     :ensure t
     :init
     (ivy-rich-mode 1))
 
-  (use-package vertico
-    :ensure t
-    :config
-    (vertico-mode 1))
+  ;; (use-package vertico
+  ;;   :ensure t
+  ;;   :config
+  ;;   (vertico-mode 1))
 
   (use-package marginalia
-  :ensure t
-  :after vertico
-  :init
-  (marginalia-mode))
+    :ensure t
+    :after vertico
+    :init
+    (marginalia-mode))
 #+end_src
 
 #+RESULTS:
 
 * Completion framework
 Company mode
-# #+begin_src emacs-lisp
-# (add-hook 'after-init-hook 'global-company-mode)
-# (use-package company
-#     :ensure t
-# )
-# #+end_src
+#+begin_src emacs-lisp
+  (add-hook 'after-init-hook 'global-company-mode)
+  (use-package company
+    :ensure t)
+#+end_src
+
+#+RESULTS:
 
 * Utilities
 ** Helpful
@@ -283,7 +272,6 @@ An important package which gives possible keystrokes and corresponding actions i
 Not sure what it does now. Need to read about it.
 #+begin_src emacs-lisp
   (use-package orderless
-
     :ensure t)
 #+end_src
 ** Rainbow-delimiters
@@ -298,8 +286,7 @@ Amazing package which shows matching brackets in same colour.
   (use-package flycheck
     :ensure t
     :init
-    (global-flycheck-mode)
-    )
+    (global-flycheck-mode +1))
 #+end_src
 ** Yasnippet
 All the yasnippets can be activated using the first three letters of the snippet
@@ -308,8 +295,7 @@ followed by ~TAB~. The mode is enabled globally.
   (use-package yasnippet
     :ensure t
     :init
-    (yas-global-mode)
-    )
+    (yas-global-mode))
   (use-package yasnippet-snippets
     :ensure t)
 #+end_src
@@ -334,7 +320,7 @@ A RSS feed reader.
 #+end_src
 
 ** compat
-Required by maggit
+Required by magit
 #+begin_src emacs-lisp
   (use-package compat
   :ensure t)
@@ -343,6 +329,11 @@ Required by maggit
 * ORG mode
 Colour output for code snippets in ~LaTeX~ using ~minted~ and some other ~LaTeX~ export stuff. Also includes for config for ~org-ref~.
 #+begin_src emacs-lisp
+  (use-package org-inline-pdf  ;; For inline display of pdf files
+  :ensure t
+  :hook
+  ((org-mode . org-inline-pdf-mode)))
+
   (use-package org
     ;;:ensure t
     :config
@@ -376,25 +367,24 @@ Colour output for code snippets in ~LaTeX~ using ~minted~ and some other ~LaTeX~
 		     ("\\subsection{%s}" . "\\subsection*{%s}")
 		     ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
 		     )))
-
-    (add-hook 'org-mode-hook #'org-inline-pdf-mode)
     (add-hook 'org-mode-hook
 	      (lambda () (add-hook 'after-save-hook #'org-babel-tangle
 				   :append :local)))
-    (add-hook 'org-mode-hook 'toc-org-mode)
-    )
+  )
 #+end_src
 
 ** Toc-org
 #+begin_src emacs-lisp
   (use-package toc-org
-    :ensure t)
+    :ensure t
+    :hook ((org-mode . toc-org-mode)))
 #+end_src
 ** Org-superstar
 For fancy bullets in org mode. Org-bullets is outdated.
 #+begin_src emacs-lisp
   (use-package org-superstar
     :ensure t
+    :after org
     :custom
     (org-superstar-headline-bullets-list '("◉" "○" "✿" "🞛" "✜" "◆" "▶" "✸" "☯" "☯" "☯" "☯" "☯" "☯" ))
     :config
@@ -416,9 +406,10 @@ For fancy bullets in org mode. Org-bullets is outdated.
     ;;                 :height 2.074
     ;;                 :foreground 'unspecified
     ;;                 :inherit 'org-level-8)
-    :hook (org-mode . org-superstar-mode)
+  :hook ((org-mode . org-superstar-mode))
     )
 #+end_src
+
 ** Org-ref
 The default citation type is ~autocite~ defined using ~org-ref-default-citation-link~. Different citation types such as ~cite~, ~citep~ etc can be given instead of ~autocite~ by changing the variable. The variable must be in ~:init~ block so that it can be evaluated before loading the package. Keeping it in the ~:config~ block doesn't work. List of all such types can be seen in the documentation of ~org-ref-cite-types~.
 
@@ -433,17 +424,58 @@ The default citation type is ~autocite~ defined using ~org-ref-default-citation-
     :ensure t
     :after org
     :init
-    ;;(require 'org-ref-helm)
-    (require 'org-ref-ivy)
-    (setq org-ref-default-citation-link "autocite")
+    (require 'org-ref-helm)  ;; helm plays well with org-ref
+    ;;(require 'org-ref-ivy)
+  :custom
+    (org-ref-default-citation-link "autocite")
+    (org-ref-default-bibliography "/home/digvijay/Documents/manuscripts/report.bib")
     :config
     (setq bibtex-dialect 'biblatex)
+  :hook
+  ((org-roam-mode . org-ref-mode))
     :bind
     (:map org-mode-map
-    (("C-c c" . org-ref-insert-cite-link)
-     ("C-c r" . org-ref-insert-ref-link)))
-    )
+	  (("C-c c" . org-ref-insert-cite-link)
+	   ("C-c r" . org-ref-insert-ref-link))))
 #+end_src
+
+#+RESULTS:
+: org-ref-insert-ref-link
+
+** Org-roam
+#+begin_src emacs-lisp
+  (use-package org-roam
+    :ensure t
+    :init
+    ;;(setq org-roam-v2-ack t)
+    :custom
+    (org-roam-directory "~/RoamNotes")
+    (org-roam-completion-everywhere t)
+    :bind (("C-c n l" . org-roam-buffer-toggle)
+	   ("C-c n f" . org-roam-node-find)
+	   ("C-c n i" . org-roam-node-insert)
+	   :map org-mode-map
+	   ("C-M-i" . completion-at-point)
+	   :map org-roam-dailies-map
+	   ("Y" . org-roam-dailies-capture-yesterday)
+	   ("T" . org-roam-dailies-capture-tomorrow))
+    :bind-keymap
+    ("C-c n d" . org-roam-dailies-map)
+    :config
+    (require 'org-roam-dailies) ;; Ensure the keymap is available
+    (org-roam-db-autosync-mode)
+    )
+
+  (use-package org-roam-bibtex
+    :ensure t
+    :after org-roam
+    :hook (org-mode . org-roam-bibtex-mode))
+
+  (use-package org-roam-ui
+    :ensure t)
+#+end_src
+
+#+RESULTS:
 
 ** Asymptote
 #+begin_src emacs-lisp
@@ -464,8 +496,14 @@ Install lsp-mode
 #+begin_src emacs-lisp
   (use-package lsp-mode
     :ensure t
-    )
+    :hook
+    ((python-mode . lsp-mode)
+     (julia-mode . lsp-mode)))
 #+end_src
+
+#+RESULTS:
+| lsp-mode | rainbow-delimiters-mode |
+
 ** Julia
 *** Keybindings
 | Action                    | Keybindings | Function/Command |
@@ -527,9 +565,9 @@ Install lsp-mode
 		 "ipython")
 
     ;; Enable Flycheck
-    (when (require 'flycheck nil t)
-      (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
-      (add-hook 'elpy-mode-hook 'flycheck-mode))
+    ;; (when (require 'flycheck nil t)
+    ;;   (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
+    ;;   (add-hook 'elpy-mode-hook 'flycheck-mode))
     )
 #+end_src
 
@@ -580,32 +618,38 @@ code block.
 | live-preview at point | C-c C-p C-p |                  |
 #+begin_src emacs-lisp
   '(TeX-PDF-mode t)
+  (add-hook 'LaTeX-mode-hook #'lsp-mode)
+
   (use-package tex
     :ensure auctex)
-  (add-hook 'tex-mode-hook 'lsp-mode)
-  (add-hook 'tex-mode-hook 'flycheck-mode)
+
+  ;; (add-hook 'tex-mode-hook #'lsp-mode)
+  ;; (add-hook 'tex-mode-hook #'flycheck-mode)
   ;; Use LatexMK for compiling and inheret pdf setting from auctex
   (use-package auctex-latexmk
     :ensure t
     :config
     (auctex-latexmk-setup)
-    (setq auctex-latexmk-inherit-TeX-PDF-mode t)
-    )
+    (setq auctex-latexmk-inherit-TeX-PDF-mode t))
+
   (add-to-list 'TeX-command-list
 	       '("LatexMK-lua" "latexmk -lualatex -pdflua %S%(mode) %(file-line-error) %(extraopts) %t" TeX-run-latexmk nil
 		 (plain-tex-mode latex-mode doctex-mode)
 		 :help "Run LatexMK-lua"))
   ;; Use RefTeX for citations and references
-  (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
-  (setq reftex-plug-into-AUCTeX t)
+  ;;(add-hook 'LaTeX-mode-hook 'turn-on-reftex)
+  ;;(setq reftex-plug-into-AUCTeX t)
   ;; Use helm-bibtex for references and citations
-  ;; (use-package helm
-  ;; :ensure t)
-  ;; (use-package helm-bibtex
-  ;; :ensure t)
-  ;; (autoload 'helm-bibtex "helm-bibtex" "" t)
+  (use-package helm
+  :ensure t)
+  (use-package helm-bibtex
+  :ensure t
+  :config
+  (setq bibtex-completion-bibliography
+      '("/home/digvijay/Documents/manuscripts/report.bib"))
+  (autoload 'helm-bibtex "helm-bibtex" "" t))
 
-  ;; Use ivy-bibtex for citations and references
+  ;; ;; Use ivy-bibtex for citations and references
   ;; (use-package ivy-bibtex
   ;;   :ensure t
   ;;   :config
@@ -621,10 +665,7 @@ code block.
   ;;   (setq ivy-bibtex-default-multi-action 'ivy-bibtex-insert-key)
   ;;   (setq bibtex-completion-cite-prompt-for-optional-arguments nil)
   ;;   :bind
-  ;;   (
-  ;;    ("C-c c" . ivy-bibtex-with-local-bibliography)
-  ;;    )
-  ;;   )
+  ;;   (("C-c c" . ivy-bibtex-with-local-bibliography)))
 #+end_src
 
 #+RESULTS:

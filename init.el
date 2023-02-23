@@ -122,43 +122,34 @@ apps are not started from a shell."
 (use-package ivy
   :ensure t
   :config
-    (ivy-mode)
-    (setq ivy-use-virtual-buffers t)
-    (setq enable-recursive-minibuffers t)
-    ;; enable this if you want `swiper' to use it
-    (setq search-default-mode #'char-fold-to-regexp)
-    (global-set-key "\C-s" 'swiper-isearch)
-    ;;(global-set-key (kbd "M-x") 'counsel-M-x)
-    (global-set-key (kbd "C-x C-f") 'counsel-find-file)
-    (global-set-key (kbd "<f1> f") 'counsel-describe-function)
-    (global-set-key (kbd "<f1> v") 'counsel-describe-variable)
-    (global-set-key (kbd "<f1> o") 'counsel-describe-symbol)
-    (global-set-key (kbd "<f1> l") 'counsel-find-library)
-    (global-set-key (kbd "<f2> i") 'counsel-info-lookup-symbol)
-    (global-set-key (kbd "<f2> u") 'counsel-unicode-char)
-    (global-set-key (kbd "C-c g") 'counsel-git)
-    (global-set-key (kbd "C-c j") 'counsel-git-grep)
-    (global-set-key (kbd "C-c k") 'counsel-ag)
-    (global-set-key (kbd "C-x l") 'counsel-locate)
-    (global-set-key (kbd "C-S-o") 'counsel-rhythmbox)
-    ;;(global-set-key (kbd "SPC-b b") 'ivy-switch-buffer)
-    (define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history))
+  (ivy-mode)
+  (setq ivy-use-virtual-buffers t)
+  (setq enable-recursive-minibuffers t)
+  ;; enable this if you want `swiper' to use it
+  (setq search-default-mode #'char-fold-to-regexp)
+  (global-set-key "\C-s" 'swiper-isearch)
+  ;;(global-set-key (kbd "M-x") 'counsel-M-x)
+  (define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history))
 
 (use-package ivy-rich
   :ensure t
   :init
   (ivy-rich-mode 1))
 
-(use-package vertico
-  :ensure t
-  :config
-  (vertico-mode 1))
+;; (use-package vertico
+;;   :ensure t
+;;   :config
+;;   (vertico-mode 1))
 
 (use-package marginalia
-:ensure t
-:after vertico
-:init
-(marginalia-mode))
+  :ensure t
+  :after vertico
+  :init
+  (marginalia-mode))
+
+(add-hook 'after-init-hook 'global-company-mode)
+(use-package company
+  :ensure t)
 
 (use-package helpful  ;; probably not needed. Can be commented
   :ensure t
@@ -178,7 +169,6 @@ apps are not started from a shell."
   (which-key-mode))
 
 (use-package orderless
-
   :ensure t)
 
 (use-package rainbow-delimiters
@@ -188,14 +178,12 @@ apps are not started from a shell."
 (use-package flycheck
   :ensure t
   :init
-  (global-flycheck-mode)
-  )
+  (global-flycheck-mode +1))
 
 (use-package yasnippet
   :ensure t
   :init
-  (yas-global-mode)
-  )
+  (yas-global-mode))
 (use-package yasnippet-snippets
   :ensure t)
 
@@ -217,6 +205,11 @@ apps are not started from a shell."
 
 (use-package compat
 :ensure t)
+
+(use-package org-inline-pdf  ;; For inline display of pdf files
+:ensure t
+:hook
+((org-mode . org-inline-pdf-mode)))
 
 (use-package org
   ;;:ensure t
@@ -251,19 +244,18 @@ apps are not started from a shell."
 		   ("\\subsection{%s}" . "\\subsection*{%s}")
 		   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
 		   )))
-
-  (add-hook 'org-mode-hook #'org-inline-pdf-mode)
   (add-hook 'org-mode-hook
 	    (lambda () (add-hook 'after-save-hook #'org-babel-tangle
 				 :append :local)))
-  (add-hook 'org-mode-hook 'toc-org-mode)
-  )
+)
 
 (use-package toc-org
-  :ensure t)
+  :ensure t
+  :hook ((org-mode . toc-org-mode)))
 
 (use-package org-superstar
   :ensure t
+  :after org
   :custom
   (org-superstar-headline-bullets-list '("◉" "○" "✿" "🞛" "✜" "◆" "▶" "✸" "☯" "☯" "☯" "☯" "☯" "☯" ))
   :config
@@ -285,23 +277,56 @@ apps are not started from a shell."
   ;;                 :height 2.074
   ;;                 :foreground 'unspecified
   ;;                 :inherit 'org-level-8)
-  :hook (org-mode . org-superstar-mode)
+:hook ((org-mode . org-superstar-mode))
   )
 
 (use-package org-ref
   :ensure t
   :after org
   :init
-  ;;(require 'org-ref-helm)
-  (require 'org-ref-ivy)
-  (setq org-ref-default-citation-link "autocite")
+  (require 'org-ref-helm)  ;; helm plays well with org-ref
+  ;;(require 'org-ref-ivy)
+:custom
+  (org-ref-default-citation-link "autocite")
+  (org-ref-default-bibliography "/home/digvijay/Documents/manuscripts/report.bib")
   :config
   (setq bibtex-dialect 'biblatex)
+:hook
+((org-roam-mode . org-ref-mode))
   :bind
   (:map org-mode-map
-  (("C-c c" . org-ref-insert-cite-link)
-   ("C-c r" . org-ref-insert-ref-link)))
+	(("C-c c" . org-ref-insert-cite-link)
+	 ("C-c r" . org-ref-insert-ref-link))))
+
+(use-package org-roam
+  :ensure t
+  :init
+  ;;(setq org-roam-v2-ack t)
+  :custom
+  (org-roam-directory "~/RoamNotes")
+  (org-roam-completion-everywhere t)
+  :bind (("C-c n l" . org-roam-buffer-toggle)
+	 ("C-c n f" . org-roam-node-find)
+	 ("C-c n i" . org-roam-node-insert)
+	 :map org-mode-map
+	 ("C-M-i" . completion-at-point)
+	 :map org-roam-dailies-map
+	 ("Y" . org-roam-dailies-capture-yesterday)
+	 ("T" . org-roam-dailies-capture-tomorrow))
+  :bind-keymap
+  ("C-c n d" . org-roam-dailies-map)
+  :config
+  (require 'org-roam-dailies) ;; Ensure the keymap is available
+  (org-roam-db-autosync-mode)
   )
+
+(use-package org-roam-bibtex
+  :ensure t
+  :after org-roam
+  :hook (org-mode . org-roam-bibtex-mode))
+
+(use-package org-roam-ui
+  :ensure t)
 
 (add-to-list 'load-path "/usr/share/asymptote/")
 (add-to-list 'load-path "/home/digvijay/emacs_custom_libs/")
@@ -316,7 +341,9 @@ apps are not started from a shell."
 
 (use-package lsp-mode
   :ensure t
-  )
+  :hook
+  ((python-mode . lsp-mode)
+   (julia-mode . lsp-mode)))
 
 (use-package julia-repl
   :ensure t
@@ -359,9 +386,9 @@ apps are not started from a shell."
 	       "ipython")
 
   ;; Enable Flycheck
-  (when (require 'flycheck nil t)
-    (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
-    (add-hook 'elpy-mode-hook 'flycheck-mode))
+  ;; (when (require 'flycheck nil t)
+  ;;   (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
+  ;;   (add-hook 'elpy-mode-hook 'flycheck-mode))
   )
 
 (setq tcl-application "~/bin/OpenSees")
@@ -372,32 +399,38 @@ apps are not started from a shell."
   :ensure t)
 
 '(TeX-PDF-mode t)
+(add-hook 'LaTeX-mode-hook #'lsp-mode)
+
 (use-package tex
   :ensure auctex)
-(add-hook 'tex-mode-hook 'lsp-mode)
-(add-hook 'tex-mode-hook 'flycheck-mode)
+
+;; (add-hook 'tex-mode-hook #'lsp-mode)
+;; (add-hook 'tex-mode-hook #'flycheck-mode)
 ;; Use LatexMK for compiling and inheret pdf setting from auctex
 (use-package auctex-latexmk
   :ensure t
   :config
   (auctex-latexmk-setup)
-  (setq auctex-latexmk-inherit-TeX-PDF-mode t)
-  )
+  (setq auctex-latexmk-inherit-TeX-PDF-mode t))
+
 (add-to-list 'TeX-command-list
 	     '("LatexMK-lua" "latexmk -lualatex -pdflua %S%(mode) %(file-line-error) %(extraopts) %t" TeX-run-latexmk nil
 	       (plain-tex-mode latex-mode doctex-mode)
 	       :help "Run LatexMK-lua"))
 ;; Use RefTeX for citations and references
-(add-hook 'LaTeX-mode-hook 'turn-on-reftex)
-(setq reftex-plug-into-AUCTeX t)
+;;(add-hook 'LaTeX-mode-hook 'turn-on-reftex)
+;;(setq reftex-plug-into-AUCTeX t)
 ;; Use helm-bibtex for references and citations
-;; (use-package helm
-;; :ensure t)
-;; (use-package helm-bibtex
-;; :ensure t)
-;; (autoload 'helm-bibtex "helm-bibtex" "" t)
+(use-package helm
+:ensure t)
+(use-package helm-bibtex
+:ensure t
+:config
+(setq bibtex-completion-bibliography
+    '("/home/digvijay/Documents/manuscripts/report.bib"))
+(autoload 'helm-bibtex "helm-bibtex" "" t))
 
-;; Use ivy-bibtex for citations and references
+;; ;; Use ivy-bibtex for citations and references
 ;; (use-package ivy-bibtex
 ;;   :ensure t
 ;;   :config
@@ -413,10 +446,7 @@ apps are not started from a shell."
 ;;   (setq ivy-bibtex-default-multi-action 'ivy-bibtex-insert-key)
 ;;   (setq bibtex-completion-cite-prompt-for-optional-arguments nil)
 ;;   :bind
-;;   (
-;;    ("C-c c" . ivy-bibtex-with-local-bibliography)
-;;    )
-;;   )
+;;   (("C-c c" . ivy-bibtex-with-local-bibliography)))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
