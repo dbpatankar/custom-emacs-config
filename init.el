@@ -22,17 +22,20 @@ apps are not started from a shell."
 (column-number-mode 1)
 (global-goto-address-mode 1)
 
+;; Line numbers
 (global-display-line-numbers-mode 1)
 (setq display-line-numbers-type 'relative)
-
+;; Visual line mode
 (global-visual-line-mode 1)
 
 (global-auto-revert-mode 1)
 
+;; Split window vertically by default
 (setq
    split-width-threshold 0
    split-height-threshold nil)
 
+;; Replace yes-no answer options to y-n everywhere
 (defalias 'yes-or-no-p 'y-or-n-p)
 
 (setq backup-directory-alist
@@ -130,11 +133,6 @@ apps are not started from a shell."
   :init
   (ivy-rich-mode 1))
 
-;; (use-package vertico
-;;   :ensure t
-;;   :config
-;;   (vertico-mode 1))
-
 (use-package marginalia
   :ensure t
   :after vertico
@@ -181,24 +179,11 @@ apps are not started from a shell."
 (use-package yasnippet-snippets
   :ensure t)
 
-(use-package elfeed-goodies
+(use-package compat
   :ensure t)
 
-(use-package elfeed
-  :ensure t
-  :config
-  (require 'elfeed-goodies)
-  (elfeed-goodies/setup)
-  (setq elfeed-feeds '(("https://www.reddit.com/r/linux.rss" linux reddit)
-		       ("https://www.reddit.com/r/emacs.rss" emacs reddit)
-		       ("https://www.reddit.com/r/julia.rss" julia programming reddit)
-		       ("http://timesofindia.indiatimes.com/rssfeedstopstories.cms" TOI news)
-		       ("https://distrowatch.com/news/dw.xml" distrowatch linux)
-		       ("https://rss.slashdot.org/Slashdot/slashdotMain" shashdot linux)
-		       )))
-
-(use-package compat
-:ensure t)
+(use-package magit
+  :ensure t)
 
 (use-package org
   ;;:ensure t
@@ -360,7 +345,7 @@ apps are not started from a shell."
 (use-package elpy
   :ensure t
   :init
-  (elpy-enable)
+  (elpy-enable))
   ;; Use jupyter for REPL
   ;;  (setq python-shell-interpreter "jupyter"
   ;;	python-shell-interpreter-args "console --simple-prompt"
@@ -380,6 +365,9 @@ apps are not started from a shell."
   :ensure t)
 (use-package rustic
   :ensure t)
+
+(use-package lua-mode
+:ensure t)
 
 '(TeX-PDF-mode t)
 (add-hook 'LaTeX-mode-hook #'lsp-mode)
@@ -406,13 +394,21 @@ apps are not started from a shell."
 
 ;; Use helm-bibtex for citations
 (use-package helm
-:ensure t)
+  :ensure t)
 (use-package helm-bibtex
-:ensure t
-:config
-(setq bibtex-completion-bibliography
-    '("/home/digvijay/Documents/manuscripts/report.bib"))
-(autoload 'helm-bibtex "helm-bibtex" "" t))
+  :ensure t
+  :config
+  (setq bibtex-completion-bibliography
+	'("/home/digvijay/Documents/manuscripts/report.bib"))
+  :bind
+  (("C-c c" . helm-bibtex)))
+(autoload 'helm-bibtex "helm-bibtex" "" t)
+(setq  bibtex-completion-cite-prompt-for-optional-arguments nil) ;; Remove pre post note prompts
+;; Insert citation by default instead of actions
+(helm-delete-action-from-source "Insert Citation" helm-source-bibtex)
+(helm-add-action-to-source "Insert Citation" 
+			   'helm-bibtex-insert-citation 
+			   helm-source-bibtex 0)
 
 ;; ;; Use ivy-bibtex for citations 
 ;; (use-package ivy-bibtex

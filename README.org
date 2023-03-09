@@ -8,13 +8,9 @@
   - [[#add-melpa-repository][Add MELPA repository]]
   - [[#exec-path-same-as-path][exec-path same as PATH]]
   - [[#remove-some-window-decorations-and-add-some][Remove some window decorations and add some]]
-  - [[#line-numbers][Line numbers]]
-  - [[#visual-line-mode][Visual line mode]]
-  - [[#global-auto-revert][Global auto revert]]
-  - [[#split-windows-vertically-by-default][Split windows vertically by default]]
-  - [[#yes-no-to-y-n][yes-no to y-n]]
-  - [[#backup-files-in-tmp][Backup files in tmp]]
-- [[#theming][Theming]]
+  - [[#some-customizations][Some customizations]]
+  - [[#backup-files-in-tmp][Backup files in /tmp]]
+- [[#theme][Theme]]
 - [[#evil-and-keymap][EVIL and keymap]]
 - [[#search-and-filter][Search and filter]]
 - [[#completion-framework][Completion framework]]
@@ -25,8 +21,7 @@
   - [[#rainbow-delimiters][Rainbow-delimiters]]
   - [[#flycheck][Flycheck]]
   - [[#yasnippet][Yasnippet]]
-  - [[#elfeed][Elfeed]]
-  - [[#compat][compat]]
+  - [[#magit][Magit]]
 - [[#org-mode][ORG mode]]
   - [[#toc-org][Toc-org]]
   - [[#org-superstar][Org-superstar]]
@@ -38,6 +33,7 @@
   - [[#python][Python]]
   - [[#tcl][TCL]]
   - [[#rust][Rust]]
+  - [[#lua][Lua]]
 - [[#latex][LaTeX]]
   - [[#reftex][reftex]]
   - [[#helm][helm]]
@@ -80,37 +76,26 @@ exec-path is emacs path where shells in emacs search for executables. It is also
   (global-goto-address-mode 1)
 #+end_src
 
-** Line numbers
+** Some customizations
 #+begin_src emacs-lisp
+  ;; Line numbers
   (global-display-line-numbers-mode 1)
   (setq display-line-numbers-type 'relative)
-#+end_src
-
-** Visual line mode
-#+begin_src emacs-lisp
+  ;; Visual line mode
   (global-visual-line-mode 1)
-#+end_src
 
-
-** Global auto revert
-#+begin_src emacs-lisp
   (global-auto-revert-mode 1)
-#+end_src
 
-** Split windows vertically by default
-#+begin_src emacs-lisp
+  ;; Split window vertically by default
   (setq
      split-width-threshold 0
      split-height-threshold nil)
-#+end_src
 
-** yes-no to y-n
-Replace "Yes-No" answer options to "y-n" everywhere.
-#+begin_src emacs-lisp
+  ;; Replace yes-no answer options to y-n everywhere
   (defalias 'yes-or-no-p 'y-or-n-p)
 #+end_src
 
-** Backup files in tmp
+** Backup files in /tmp
 #+begin_src emacs-lisp
   (setq backup-directory-alist
 	`((".*" . ,temporary-file-directory)))
@@ -118,7 +103,7 @@ Replace "Yes-No" answer options to "y-n" everywhere.
 	`((".*" ,temporary-file-directory t)))
 #+end_src
 
-* Theming
+* Theme
 #+begin_src emacs-lisp
   (use-package dashboard
     :ensure t
@@ -217,11 +202,6 @@ Thinking of removing evil completely as I get used to emacs keychords. However, 
     :init
     (ivy-rich-mode 1))
 
-  ;; (use-package vertico
-  ;;   :ensure t
-  ;;   :config
-  ;;   (vertico-mode 1))
-
   (use-package marginalia
     :ensure t
     :after vertico
@@ -296,31 +276,34 @@ followed by ~TAB~. The mode is enabled globally.
   (use-package yasnippet-snippets
     :ensure t)
 #+end_src
-** Elfeed
-A RSS feed reader.
-#+begin_src emacs-lisp
-  (use-package elfeed-goodies
-    :ensure t)
+# ** Elfeed
+# A RSS feed reader.
+# #+begin_src emacs-lisp
+#   (use-package elfeed-goodies
+#     :ensure t)
+# 
+#   (use-package elfeed
+#     :ensure t
+#     :config
+#     (require 'elfeed-goodies)
+#     (elfeed-goodies/setup)
+#     (setq elfeed-feeds '(("https://www.reddit.com/r/linux.rss" linux reddit)
+# 			 ("https://www.reddit.com/r/emacs.rss" emacs reddit)
+# 			 ("https://www.reddit.com/r/julia.rss" julia programming reddit)
+# 			 ("http://timesofindia.indiatimes.com/rssfeedstopstories.cms" TOI news)
+# 			 ("https://distrowatch.com/news/dw.xml" distrowatch linux)
+# 			 ("https://rss.slashdot.org/Slashdot/slashdotMain" shashdot linux)
+# 			 )))
+# #+end_src
 
-  (use-package elfeed
-    :ensure t
-    :config
-    (require 'elfeed-goodies)
-    (elfeed-goodies/setup)
-    (setq elfeed-feeds '(("https://www.reddit.com/r/linux.rss" linux reddit)
-			 ("https://www.reddit.com/r/emacs.rss" emacs reddit)
-			 ("https://www.reddit.com/r/julia.rss" julia programming reddit)
-			 ("http://timesofindia.indiatimes.com/rssfeedstopstories.cms" TOI news)
-			 ("https://distrowatch.com/news/dw.xml" distrowatch linux)
-			 ("https://rss.slashdot.org/Slashdot/slashdotMain" shashdot linux)
-			 )))
-#+end_src
-
-** compat
-Required by magit
+** Magit
+compat is equired by magit
 #+begin_src emacs-lisp
   (use-package compat
-  :ensure t)
+    :ensure t)
+
+  (use-package magit
+    :ensure t)
 #+end_src
 
 * ORG mode
@@ -537,7 +520,7 @@ Install lsp-mode
   (use-package elpy
     :ensure t
     :init
-    (elpy-enable)
+    (elpy-enable))
     ;; Use jupyter for REPL
     ;;  (setq python-shell-interpreter "jupyter"
     ;;	python-shell-interpreter-args "console --simple-prompt"
@@ -573,6 +556,13 @@ I was just exploring ~rust~ and this part of config is bare minimal needed at th
     :ensure t)
   (use-package rustic
     :ensure t)
+#+end_src
+
+** Lua
+This is only for editing awesomewm config. Can be deleted if not using awesomewm.
+#+begin_src emacs-lisp
+  (use-package lua-mode
+  :ensure t)
 #+end_src
 
 * LaTeX
@@ -625,18 +615,27 @@ Use RefTeX for citations and references
   ;;(setq reftex-plug-into-AUCTeX t)
 #+end_src
 ** helm
-Use helm with latex for citations
+Use helm with latex for citations. Use <Tab> on entries for actions.
 #+begin_src emacs-lisp
   ;; Use helm-bibtex for citations
   (use-package helm
-  :ensure t)
+    :ensure t)
   (use-package helm-bibtex
-  :ensure t
-  :config
-  (setq bibtex-completion-bibliography
-      '("/home/digvijay/Documents/manuscripts/report.bib"))
-  (autoload 'helm-bibtex "helm-bibtex" "" t))
+    :ensure t
+    :config
+    (setq bibtex-completion-bibliography
+	  '("/home/digvijay/Documents/manuscripts/report.bib"))
+    :bind
+    (("C-c c" . helm-bibtex)))
+  (autoload 'helm-bibtex "helm-bibtex" "" t)
+  (setq  bibtex-completion-cite-prompt-for-optional-arguments nil) ;; Remove pre post note prompts
+  ;; Insert citation by default instead of actions
+  (helm-delete-action-from-source "Insert Citation" helm-source-bibtex)
+  (helm-add-action-to-source "Insert Citation" 
+			     'helm-bibtex-insert-citation 
+			     helm-source-bibtex 0)
 #+end_src
+
 ** ivy
 Use ivy-bibtex for citations
 #+begin_src emacs-lisp
