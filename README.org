@@ -15,6 +15,7 @@
 - [[#search-and-filter][Search and filter]]
 - [[#completion-framework][Completion framework]]
 - [[#utilities][Utilities]]
+  - [[#vterm][VTerm]]
   - [[#helpful][Helpful]]
   - [[#which-key][Which-key]]
   - [[#orderless][Orderless]]
@@ -22,6 +23,7 @@
   - [[#flycheck][Flycheck]]
   - [[#yasnippet][Yasnippet]]
   - [[#magit][Magit]]
+  - [[#pdf-tools][pdf-tools]]
 - [[#org-mode][ORG mode]]
   - [[#toc-org][Toc-org]]
   - [[#org-superstar][Org-superstar]]
@@ -222,6 +224,13 @@ Company mode
 #+RESULTS:
 
 * Utilities
+** VTerm
+#+begin_src emacs-lisp
+  (use-package vterm
+  :ensure t)
+#+end_src
+
+
 ** Helpful
 This package is for better view of documentation. Currently I do not see any significant improvement but keeping it to try and tweak it further.
 #+begin_src emacs-lisp
@@ -305,6 +314,15 @@ compat is equired by magit
   (use-package magit
     :ensure t)
 #+end_src
+
+** pdf-tools
+#+begin_src emacs-lisp
+  (use-package pdf-tools
+    :ensure t
+    :init
+    (pdf-loader-install))
+#+end_src
+
 
 * ORG mode
 Colour output for code snippets in ~LaTeX~ using ~minted~ and some other ~LaTeX~ export stuff. Also includes for config for ~org-ref~.
@@ -443,13 +461,21 @@ The default citation type is ~autocite~ defined using ~org-ref-default-citation-
   (use-package org-roam-bibtex
     :ensure t
     :after org-roam
-    :hook (org-mode . org-roam-bibtex-mode))
+    :hook (org-roam-mode . org-roam-bibtex-mode))
 
   (use-package org-roam-ui
     :ensure t)
+
+  (use-package org-noter
+    :ensure t
+    :config
+    (setq org-noter-notes-search-path '("~/RoamNotes/")
+	  org-noter-separate-notes-from-heading t)
+    :bind
+    (:map org-noter-doc-mode-map
+	  ("C-c n n" . org-noter-insert-note)))
 #+end_src
 
-#+RESULTS:
 
 ** Asymptote
 #+begin_src emacs-lisp

@@ -143,6 +143,9 @@ apps are not started from a shell."
 (use-package company
   :ensure t)
 
+(use-package vterm
+:ensure t)
+
 (use-package helpful  ;; probably not needed. Can be commented
   :ensure t
   :custom
@@ -184,6 +187,11 @@ apps are not started from a shell."
 
 (use-package magit
   :ensure t)
+
+(use-package pdf-tools
+  :ensure t
+  :init
+  (pdf-loader-install))
 
 (use-package org
   ;;:ensure t
@@ -298,10 +306,19 @@ apps are not started from a shell."
 (use-package org-roam-bibtex
   :ensure t
   :after org-roam
-  :hook (org-mode . org-roam-bibtex-mode))
+  :hook (org-roam-mode . org-roam-bibtex-mode))
 
 (use-package org-roam-ui
   :ensure t)
+
+(use-package org-noter
+  :ensure t
+  :config
+  (setq org-noter-notes-search-path '("~/RoamNotes/")
+	org-noter-separate-notes-from-heading t)
+  :bind
+  (:map org-noter-doc-mode-map
+	("C-c n n" . org-noter-insert-note)))
 
 (add-to-list 'load-path "/usr/share/asymptote/")
 (add-to-list 'load-path "/home/digvijay/emacs_custom_libs/")
